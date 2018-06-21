@@ -44,7 +44,7 @@
 
 
 
-<link rel="canonical" href="https://jacknehc.github.io/2018/05/06/苹果真机测试原理/"/>
+<link rel="canonical" href="https://jacknehc.github.io/2018/06/22/苹果真机测试原理/"/>
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6.0" />
@@ -239,7 +239,7 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2018-05-06
+          2018-06-22
         </span>
         
           <div class="post-category">
@@ -250,7 +250,7 @@
         
         
         <div class="post-visits"
-             data-url="/2018/05/06/苹果真机测试原理/"
+             data-url="/2018/06/22/苹果真机测试原理/"
              data-title="苹果真机测试原理">
             阅读次数
           </div>
@@ -275,15 +275,20 @@
 <h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><h3 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h3><p>这里可能涉及到密码学的一种-&gt;<a href="https://zh.wikipedia.org/wiki/%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86" target="_blank" rel="external">非对称加密</a>，这里大家自行了解下，等我有空再整理一篇非对称加密出来。</p>
 <h3 id="真机测试流程"><a href="#真机测试流程" class="headerlink" title="真机测试流程"></a>真机测试流程</h3><p>首先，我们先来看一下真机测试的流程：</p>
 <ol>
-<li><p>申请证书(cer)<br>我们从Mac电脑的钥匙串工具-&gt;从证书颁发机构请求证书，拿到一个<code>CertificateSigningRequest.certSigningRequest</code>文件，然后到苹果开发者平台创建证书的时候提交这个文件，他才会让你创建并给你下载。</p>
+<li><p>申请证书(cer)</p>
+<p> 我们从Mac电脑的钥匙串工具-&gt;从证书颁发机构请求证书，拿到一个<code>CertificateSigningRequest.certSigningRequest</code>文件，然后到苹果开发者平台创建证书的时候提交这个文件，他才会让你创建并给你下载。</p>
 </li>
-<li><p>添加APP ID<br>苹果开发者平台添加你的Bundle ID，创建APP ID。</p>
+<li><p>添加APP ID</p>
+<p> 苹果开发者平台添加你的Bundle ID，创建APP ID。</p>
 </li>
-<li><p>添加Device ID<br>苹果开发者平台添加你要真机测试的设备UDID，创建Device ID。</p>
+<li><p>添加Device ID</p>
+<p> 苹果开发者平台添加你要真机测试的设备UDID，创建Device ID。</p>
 </li>
-<li><p>创建描述文件(profile)<br>苹果开发者平台创建描述文件，需要选择你刚才添加的APP ID和Device ID，才能创建并下载。</p>
+<li><p>创建描述文件(profile)</p>
+<p> 苹果开发者平台创建描述文件，需要选择你刚才添加的APP ID和Device ID，才能创建并下载。</p>
 </li>
-<li><p>运行到手机<br>把1和4创建好的<code>证书</code>和<code>描述文件</code>双击下，Comman+R，没意外的话，就可以运行到我们的iPhone。</p>
+<li><p>运行到手机</p>
+<p> 把1和4创建好的<code>证书</code>和<code>描述文件</code>双击下，Comman+R，没意外的话，就可以运行到我们的iPhone。</p>
 </li>
 </ol>
 <p>兜了一圈，我们才把APP装到我们iPhone，为什么一向追求简单的苹果会让开发者都这么大圈子呢？</p>
@@ -291,7 +296,8 @@
 <p>但是，对于开发者来说，他要真机测试，不可能每次都传到App Store上，下载下来测试吧？这样太不人性化了吧？</p>
 <p>所以苹果想出了个方法，也就是上面说的真机测试的流程。下面我就简单分析下这个流程实际上是做了什么，首先在Mac电脑有一对公钥私钥，假设称为公钥M，私钥M，苹果服务器和手机有一对公钥私钥，假设称为公钥A，私钥A。</p>
 <ol>
-<li><p>申请证书(cer)<br>申请证书，实际是这样的，咱们的Mac电脑生成公钥M和私钥M，然后把公钥(CertificateSigningRequest.certSigningRequest)传给苹果，苹果用他的私钥A加密公钥M和公钥M的HASH，生成证书(ios_development.cer)。</p>
+<li><p>申请证书(cer)</p>
+<p> 申请证书，实际是这样的，咱们的Mac电脑生成公钥M和私钥M，然后把公钥(CertificateSigningRequest.certSigningRequest)传给苹果，苹果用他的私钥A加密公钥M和公钥M的HASH，生成证书(ios_development.cer)。</p>
 </li>
 <li><p>添加APP ID</p>
 </li>
@@ -300,9 +306,11 @@
 <li>添加Device ID</li>
 </ol>
 <ol>
-<li><p>创建描述文件(profile)<br>把APP ID，Device ID和权力文件(就是我们Ad Hoc，通知等信息)打包成一个profile文件(ProfileDevelopment.mobileprovision)。</p>
+<li><p>创建描述文件(profile)</p>
+<p> 把APP ID，Device ID和权力文件(就是我们Ad Hoc，通知等信息)打包成一个profile文件(ProfileDevelopment.mobileprovision)。</p>
 </li>
-<li><p>运行到手机<br>重点来了<br>Mac电脑编译，打包APP，运行到手机，这个APP里面包含：<code>证书</code>，<code>profile</code>，<code>私钥M加密可执行文件后的APP签名</code>，<code>APP的可执行文件</code>。到手机做的操作：用手机的私钥A解密证书，因为证书是苹果服务器的私钥A加密的，只有公钥A才能解密，解开证书后，再拿证书里面的公钥M，解开由Mac电脑的私钥M加密的APP签名，确认这两步都能成功解密后，再去验证profile里的手机ID，APPID，验证成功，便安装到手机上。</p>
+<li><p>运行到手机</p>
+<p> 重点来了<br> Mac电脑编译，打包APP，运行到手机，这个APP里面包含：<code>证书</code>，<code>profile</code>，<code>私钥M加密可执行文件后的APP签名</code>，<code>APP的可执行文件</code>。到手机做的操作：用手机的私钥A解密证书，因为证书是苹果服务器的私钥A加密的，只有公钥A才能解密，解开证书后，再拿证书里面的公钥M，解开由Mac电脑的私钥M加密的APP签名，确认这两步都能成功解密后，再去验证profile里的手机ID，APPID，验证成功，便安装到手机上。</p>
 </li>
 </ol>
 <p>这，就是整个大概流程，苹果用了两次验证，来保证了两点：</p>
@@ -310,9 +318,9 @@
 <li>装到手机上的APP必须是苹果允许的</li>
 <li>开发者不会无限制的装到很多台设备上</li>
 </ol>
-<p>哔哔了那么多，感觉还不如画张图好理解：<br><img src="./苹果真机测试流程图.png" alt=""></p>
+<p>哔哔了那么多，感觉还不如画张图好理解：<br><img src="/2018/06/22/苹果真机测试原理/./苹果真机测试原理/苹果真机测试流程图.png" alt=""></p>
 <p>看到这里，其实聪明的读者应该可以猜到了，我们平时弄的p12文件，其实就是Mac电脑的私钥M，发给别的同事，打包到APP，他那边才能到真机才能够解密验证呀。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>理解其中的本质有助于解决我们日常真机测试遇到的问题，作为iOS开发者，Stay Hungry. Stay Foolish.</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>理解其中的本质有助于解决我们日常真机测试遇到的问题，作为iOS开发者，always Stay Hungry. Stay Foolish.</p>
 
       
     </div>
@@ -328,7 +336,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="https://jacknehc.github.io/2018/05/06/苹果真机测试原理/">https://jacknehc.github.io/2018/05/06/苹果真机测试原理/</a>
+      <a href="https://jacknehc.github.io/2018/06/22/苹果真机测试原理/">https://jacknehc.github.io/2018/06/22/苹果真机测试原理/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -356,7 +364,7 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2018/06/21/建立CocoaPods私人库/">
+      <a class="prev" href="/2018/06/22/建立CocoaPods私人库/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">建立CocoaPods私人库</span>
         <span class="prev-text nav-mobile">上一篇</span>
