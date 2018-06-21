@@ -17,12 +17,12 @@
 
 
 
-  <meta name="description" content="Composer删除Laravel组件失败"/>
+  <meta name="description" content="苹果真机测试原理"/>
 
 
 
 
-  <meta name="keywords" content="PHP, JackNehc" />
+  <meta name="keywords" content="iOS, JackNehc" />
 
 
 
@@ -44,7 +44,7 @@
 
 
 
-<link rel="canonical" href="https://jacknehc.github.io/2017/11/06/composer删除Laravel组件失败/"/>
+<link rel="canonical" href="https://jacknehc.github.io/2018/05/06/苹果真机测试原理/"/>
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6.0" />
@@ -99,7 +99,7 @@
 
 
 
-    <title> Composer删除Laravel组件失败 - JackNehc </title>
+    <title> 苹果真机测试原理 - JackNehc </title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -233,25 +233,25 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          Composer删除Laravel组件失败
+          苹果真机测试原理
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2017-11-06
+          2018-05-06
         </span>
         
           <div class="post-category">
             
-              <a href="/categories/问题-解决/">问题&解决</a>
+              <a href="/categories/记录/">记录</a>
             
           </div>
         
         
         <div class="post-visits"
-             data-url="/2017/11/06/composer删除Laravel组件失败/"
-             data-title="Composer删除Laravel组件失败">
+             data-url="/2018/05/06/苹果真机测试原理/"
+             data-title="苹果真机测试原理">
             阅读次数
           </div>
         
@@ -263,23 +263,56 @@
   <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题"><span class="toc-text">问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#过程"><span class="toc-text">过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决"><span class="toc-text">解决</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#内容"><span class="toc-text">内容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#非对称加密"><span class="toc-text">非对称加密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#真机测试流程"><span class="toc-text">真机测试流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
   </div>
 
 
     <div class="post-content">
       
-        <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>Laravel 5.5<br>最近新学php，想用laravel做个小网站入入门，发现laravel自带的注册功能没有进行邮箱激活功能，就打算根据这篇<a href="https://laravel-china.org/topics/2540/extended-recommendation-laravel-user-verification-for-your-application-to-verify-the-user-e-mail-logic" target="_blank" rel="external">文章</a>用这个包<a href="https://github.com/jrean/laravel-user-verification" target="_blank" rel="external">laravel-user-verification</a>实现，跟着做一半之后发现不太一样，就打算删了自己实现算了，所以打算删了这个包。<br>然后执行composer删除命令的时候，报了错。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>还记得刚开始学iOS的时候，以为真机测试只是插上线，command+R就好，直到实践了才发现，这么多步骤都些什么鬼(╯°□°）╯︵┻━┻，什么申请证书，profile，加设备ID…敢再繁琐一点吗？所以一直以来都在吐槽。最近刚好有空，便找个时间来理解下苹果这个流程以及这么做的目的，并记录下来。</p>
 <a id="more"></a>
-<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><p>执行:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ composer remove jrean/laravel-user-verification</div></pre></td></tr></table></figure>
-<p>报了这个错:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">Dependency <span class="string">"laravel/framework"</span> is also a root requirement， but is not explicitly whitelisted. Ignoring.</div><div class="line">Loading composer repositories with package information</div><div class="line">Updating dependencies (including require-dev)</div><div class="line">Package operations: 0 installs， 0 updates， 1 removal</div><div class="line">  - Removing jrean/laravel-user-verification (v5.0.1)</div><div class="line">Writing lock file</div><div class="line">Generating optimized <span class="built_in">autoload</span> files</div><div class="line">&gt; Illuminate\Foundation\ComposerScripts::postAutoloadDump</div><div class="line">&gt; @php artisan package:discover</div><div class="line"></div><div class="line">                                                                            </div><div class="line">  [Symfony\Component\Debug\Exception\FatalThrowableError]                   </div><div class="line">  Class <span class="string">'Jrean\UserVerification\UserVerificationServiceProvider'</span> not found  </div><div class="line">                                                                            </div><div class="line"></div><div class="line">Script @php artisan package:discover handling the post-autoload-dump event returned with error code 1</div><div class="line"></div><div class="line">Removal failed， reverting ./composer.json to its original content.</div></pre></td></tr></table></figure>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>查了下stackoverflow看到个答主说把laravel项目里的<code>config/app.php</code>里面的providers对包的引用代码删了，就可以了，我就记起来我根据<a href="https://laravel-china.org/topics/2540/extended-recommendation-laravel-user-verification-for-your-application-to-verify-the-user-e-mail-logic" target="_blank" rel="external">文章</a>在<code>config/app.php</code>添加过代码:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="string">'providers'</span> =&gt; [</div><div class="line">    ...</div><div class="line">    Jrean\UserVerification\UserVerificationServiceProvider::class，</div><div class="line">]，</div></pre></td></tr></table></figure></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="string">'aliases'</span> =&gt; [</div><div class="line">    ...</div><div class="line">    <span class="string">'UserVerification'</span> =&gt; Jrean\UserVerification\Facades\UserVerification::class，</div><div class="line">]，</div></pre></td></tr></table></figure>
-<p>所以我把这两段代码删了，再执行:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ composer remove jrean/laravel-user-verification</div></pre></td></tr></table></figure></p>
-<p>就删除成功了。</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><h3 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h3><p>这里可能涉及到密码学的一种-&gt;<a href="https://zh.wikipedia.org/wiki/%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86" target="_blank" rel="external">非对称加密</a>，这里大家自行了解下，等我有空再整理一篇非对称加密出来。</p>
+<h3 id="真机测试流程"><a href="#真机测试流程" class="headerlink" title="真机测试流程"></a>真机测试流程</h3><p>首先，我们先来看一下真机测试的流程：</p>
+<ol>
+<li><p>申请证书(cer)<br>我们从Mac电脑的钥匙串工具-&gt;从证书颁发机构请求证书，拿到一个<code>CertificateSigningRequest.certSigningRequest</code>文件，然后到苹果开发者平台创建证书的时候提交这个文件，他才会让你创建并给你下载。</p>
+</li>
+<li><p>添加APP ID<br>苹果开发者平台添加你的Bundle ID，创建APP ID。</p>
+</li>
+<li><p>添加Device ID<br>苹果开发者平台添加你要真机测试的设备UDID，创建Device ID。</p>
+</li>
+<li><p>创建描述文件(profile)<br>苹果开发者平台创建描述文件，需要选择你刚才添加的APP ID和Device ID，才能创建并下载。</p>
+</li>
+<li><p>运行到手机<br>把1和4创建好的<code>证书</code>和<code>描述文件</code>双击下，Comman+R，没意外的话，就可以运行到我们的iPhone。</p>
+</li>
+</ol>
+<p>兜了一圈，我们才把APP装到我们iPhone，为什么一向追求简单的苹果会让开发者都这么大圈子呢？</p>
+<p>其实吧，这是跟苹果追求的另一个方向-&gt;<code>安全</code>有关，为了保证APP安装到iPhone上都是苹果认证的，审核通过的，所有APP必须只能从App Store下载，所以简单来说，苹果应该有一种非对称加密的机制，开发者传APP到苹果服务端，苹果用他的私钥加密APP，而解密的公钥就存放在iPhone上，只能用公钥才能解密，然后安装，这是正常普通用户下载APP使用的流程。</p>
+<p>但是，对于开发者来说，他要真机测试，不可能每次都传到App Store上，下载下来测试吧？这样太不人性化了吧？</p>
+<p>所以苹果想出了个方法，也就是上面说的真机测试的流程。下面我就简单分析下这个流程实际上是做了什么，首先在Mac电脑有一对公钥私钥，假设称为公钥M，私钥M，苹果服务器和手机有一对公钥私钥，假设称为公钥A，私钥A。</p>
+<ol>
+<li><p>申请证书(cer)<br>申请证书，实际是这样的，咱们的Mac电脑生成公钥M和私钥M，然后把公钥(CertificateSigningRequest.certSigningRequest)传给苹果，苹果用他的私钥A加密公钥M和公钥M的HASH，生成证书(ios_development.cer)。</p>
+</li>
+<li><p>添加APP ID</p>
+</li>
+</ol>
+<ol>
+<li>添加Device ID</li>
+</ol>
+<ol>
+<li><p>创建描述文件(profile)<br>把APP ID，Device ID和权力文件(就是我们Ad Hoc，通知等信息)打包成一个profile文件(ProfileDevelopment.mobileprovision)。</p>
+</li>
+<li><p>运行到手机<br>重点来了<br>Mac电脑编译，打包APP，运行到手机，这个APP里面包含：<code>证书</code>，<code>profile</code>，<code>私钥M加密可执行文件后的APP签名</code>，<code>APP的可执行文件</code>。到手机做的操作：用手机的私钥A解密证书，因为证书是苹果服务器的私钥A加密的，只有公钥A才能解密，解开证书后，再拿证书里面的公钥M，解开由Mac电脑的私钥M加密的APP签名，确认这两步都能成功解密后，再去验证profile里的手机ID，APPID，验证成功，便安装到手机上。</p>
+</li>
+</ol>
+<p>这，就是整个大概流程，苹果用了两次验证，来保证了两点：</p>
+<ol>
+<li>装到手机上的APP必须是苹果允许的</li>
+<li>开发者不会无限制的装到很多台设备上</li>
+</ol>
+<p>哔哔了那么多，感觉还不如画张图好理解：<br><img src="./苹果真机测试流程图.png" alt=""></p>
+<p>看到这里，其实聪明的读者应该可以猜到了，我们平时弄的p12文件，其实就是Mac电脑的私钥M，发给别的同事，打包到APP，他那边才能到真机才能够解密验证呀。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>理解其中的本质有助于解决我们日常真机测试遇到的问题，作为iOS开发者，Stay Hungry. Stay Foolish.</p>
 
       
     </div>
@@ -295,7 +328,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="https://jacknehc.github.io/2017/11/06/composer删除Laravel组件失败/">https://jacknehc.github.io/2017/11/06/composer删除Laravel组件失败/</a>
+      <a href="https://jacknehc.github.io/2018/05/06/苹果真机测试原理/">https://jacknehc.github.io/2018/05/06/苹果真机测试原理/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -315,7 +348,7 @@
         
           <div class="post-tags">
             
-              <a href="/tags/PHP/">PHP</a>
+              <a href="/tags/iOS/">iOS</a>
             
           </div>
         
@@ -323,12 +356,18 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2017/11/17/xxxViewController会与xxxView-xib冲突/">
+      <a class="prev" href="/2018/06/21/建立CocoaPods私人库/">
         <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">xxxViewController会与xxxView.xib冲突</span>
+        <span class="prev-text nav-default">建立CocoaPods私人库</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
+    
+      <a class="next" href="/2017/11/17/xxxViewController会与xxxView-xib冲突/">
+        <span class="next-text nav-default">xxxViewController会与xxxView.xib冲突</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
     
   </nav>
 
