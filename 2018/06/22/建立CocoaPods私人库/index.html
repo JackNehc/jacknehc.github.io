@@ -275,7 +275,7 @@
 <h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><ol>
 <li><p>创建两个仓库</p>
 <p> 首先要在代码托管平台(CODING，码云，github，BitBucket等)创建两个仓库，一个是放Spec Repo的，一个放你的代码库。</p>
-<p> 我使用的是码云，命名根据个人习惯，看的懂就好：<br> <img src="/2018/06/22/建立CocoaPods私人库/./建立CocoaPods私人库/创建两个仓库.png" alt=""></p>
+<p> 我使用的是码云，命名根据个人习惯，看的懂就好：<br> <img src="/2018/06/22/建立CocoaPods私人库/创建两个仓库.png" alt=""></p>
 </li>
 <li><p>创建私有Spec Repo</p>
 <p> 什么Spec Repo呢？</p>
@@ -295,10 +295,10 @@
 <p> 他会询问几个问题，根据实际使用情况自己选择就好。</p>
 </li>
 <li><p>存放代码</p>
-<p> 把你自己的代码放到刚建的Pod项目文件工程的这个目录下：<br> <img src="/2018/06/22/建立CocoaPods私人库/./建立CocoaPods私人库/代码存放路径.png" alt=""></p>
+<p> 把你自己的代码放到刚建的Pod项目文件工程的这个目录下：<br> <img src="/2018/06/22/建立CocoaPods私人库/代码存放路径.png" alt=""></p>
 </li>
 <li><p>修改.podspec文件</p>
-<p> 修改Pod项目文件工程根目录下的.podspec文件，一般改这几个参数：<br> <img src="/2018/06/22/建立CocoaPods私人库/./建立CocoaPods私人库/编辑podspec文件.png" alt=""></p>
+<p> 修改Pod项目文件工程根目录下的.podspec文件，一般改这几个参数：<br> <img src="/2018/06/22/建立CocoaPods私人库/编辑podspec文件.png" alt=""></p>
 <p> 修改后要验证下，cd到.podspec文件目录下，执行：</p>
  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pod lib lint --allow-warnings</div></pre></td></tr></table></figure>
 <p> 因为会有警告，所以我一般都加上–allow-warnings</p>
