@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="OC利用Category重写父类方法"/>
+
+
+
+
+  <meta name="keywords" content="iOS, JackNehc" />
+
+
+
+  <meta name="baidu-site-verification" content="h3V2TVXxAH" />
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="JackNehc">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.6.0" />
+
+
+
+<link rel="canonical" href="https://jacknehc.github.io/2018/07/03/OC利用Category重写父类方法/"/>
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6.0" />
+
+
+
+
+
+
+  
+  <script id="baidu_analytics">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?9333fc0facbdc5308669a44a1c6ed08c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "mdF4nOlv42Nnv7TAzJHRiMxn-gzGzoHsz",
+      appKey: "LsmI2pcySPBxqxOlPfxdN8fJ"
+    });
+  </script>
+
+
+
+
+
+    <title> OC利用Category重写父类方法 - JackNehc </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">JackNehc</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/categories">
+        <li class="mobile-menu-item">
+          
+          
+            分类
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">JackNehc</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/categories">
+            
+            
+              分类
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          OC利用Category重写父类方法
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-07-03
+        </span>
+        
+          <div class="post-category">
+            
+              <a href="/categories/记录/">记录</a>
+            
+          </div>
+        
+        
+        <div class="post-visits"
+             data-url="/2018/07/03/OC利用Category重写父类方法/"
+             data-title="OC利用Category重写父类方法">
+            阅读次数
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法一"><span class="toc-text">方法一</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法二"><span class="toc-text">方法二</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法三"><span class="toc-text">方法三</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </div>
+
+
+    <div class="post-content">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在开发中，我们可能会遇到一种情况，写了几百个vc，突然需求要在每个vc改个背景色，可你却没有写个BaseVC做基类，全都继承UIViewController，此时，身为程序员的你肯定不会做一个一个改背景色这个决定，就算是重新一个一个改继承，虽然一劳永逸但也是十分蛋疼的事情，要知道，category是个好东西，我们可以利用category来重写父类方法。</p>
+<a id="more"></a>
+<h2 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h2><p>直接在category重写你要重写的方法，例如：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#import <span class="meta-string">"UIViewController+Base.h"</span></span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">UIViewController</span> (<span class="title">Base</span>)</span></div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</div><div class="line">    </div><div class="line">    <span class="keyword">self</span>.view.backgroundColor = [<span class="built_in">UIColor</span> yellowColor];</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<p>XCode此时会提示个警告：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Category is implementing a method <span class="built_in">which</span> will also be implemented by its primary class</div></pre></td></tr></table></figure>
+<p>去除警告：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#import <span class="meta-string">"UIViewController+Base.h"</span></span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">UIViewController</span> (<span class="title">Base</span>)</span></div><div class="line"></div><div class="line"><span class="meta">#pragma clang diagnostic push</span></div><div class="line"><span class="meta">#pragma clang diagnostic ignored <span class="meta-string">"-Wobjc-protocol-method-implementation"</span></span></div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</div><div class="line">    </div><div class="line">    <span class="keyword">self</span>.view.backgroundColor = [<span class="built_in">UIColor</span> yellowColor];</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="meta">#pragma clang diagnostic pop</span></div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<h2 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h2><p>利用runtime交换方法</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#import <span class="meta-string">"UIViewController+Base.h"</span></span></div><div class="line"><span class="meta">#import <span class="meta-string">&lt;objc/runtime.h&gt;</span></span></div><div class="line"><span class="meta">#import <span class="meta-string">&lt;objc/message.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">UIViewController</span> (<span class="title">Base</span>)</span></div><div class="line"></div><div class="line"><span class="keyword">void</span> MethodSwizzle(Class c, SEL orig, SEL new) &#123;</div><div class="line">    </div><div class="line">    Method origMethod = class_getInstanceMethod(c, orig);</div><div class="line">    Method newMethod = class_getInstanceMethod(c, new);</div><div class="line">    <span class="keyword">if</span> (class_addMethod(c, orig, method_getImplementation(newMethod), method_getTypeEncoding(newMethod))) &#123;</div><div class="line">        class_replaceMethod(c, new, method_getImplementation(origMethod), method_getTypeEncoding(origMethod));</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        method_exchangeImplementations(origMethod, newMethod);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">+ (<span class="keyword">void</span>)load &#123;</div><div class="line">    </div><div class="line">    MethodSwizzle([<span class="built_in">UIViewController</span> <span class="keyword">class</span>], <span class="keyword">@selector</span>(viewDidLoad), <span class="keyword">@selector</span>(myViewDidLoad));</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)myViewDidLoad &#123;</div><div class="line">    </div><div class="line">    <span class="keyword">self</span>.view.backgroundColor = [<span class="built_in">UIColor</span> yellowColor];</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<p>为什么这里要判断下：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (class_addMethod(c, orig, method_getImplementation(newMethod), method_getTypeEncoding(newMethod))) &#123;</div><div class="line">        class_replaceMethod(c, new, method_getImplementation(origMethod), method_getTypeEncoding(origMethod));</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        method_exchangeImplementations(origMethod, newMethod);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>而不直接method_exchangeImplementations呢？<br>因为这里有可能出现两种情况，<strong>一种是要替换的方法是父类的方法，作为子类的目标类并没有实现，另一种是要替换的方法目标类已经实现了</strong>。第一种情况的出现就是我们要判断的原因，<code>class_addMethod</code>是给类添加方法，返回值是是否添加成功，如果成功说明没有实现方法，就拿新方法替换掉刚添加的方法，否则则表示实现了方法，直接交换就好。当然你也可以在NSObject添加<code>MethodSwizzle</code>方法，方便其他类调用，向下面方法三一样。</p>
+<h2 id="方法三"><a href="#方法三" class="headerlink" title="方法三"></a>方法三</h2><p>也是利用运行时，手法略有不同，给NSObject添加个分类</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#import <span class="meta-string">"NSObject+Base.h"</span></span></div><div class="line"><span class="meta">#import <span class="meta-string">&lt;objc/runtime.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="meta">#define EXCHANGE_METHOD(a, b) [[self class] exchangeMethod:@selector(a) withNewMethod:@selector(b)]</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSObject</span> (<span class="title">Base</span>)</span></div><div class="line"></div><div class="line">+ (<span class="keyword">void</span>)exchangeMethod:(SEL)origSel withNewMethod:(SEL)newSel;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">NSObject</span> (<span class="title">Base</span>)</span></div><div class="line"></div><div class="line">+ (<span class="keyword">void</span>)exchangeMethod:(SEL)origSel withNewMethod:(SEL)newSel &#123;</div><div class="line">    </div><div class="line">    Class <span class="keyword">class</span> = [<span class="keyword">self</span> <span class="keyword">class</span>];</div><div class="line">    Method origMethod = class_getInstanceMethod(<span class="keyword">class</span>, origSel);</div><div class="line">    Method newMethod = class_getInstanceMethod(<span class="keyword">class</span>, newSel);</div><div class="line">    </div><div class="line">    <span class="keyword">if</span> (!origMethod) &#123;</div><div class="line">        origMethod = class_getClassMethod(<span class="keyword">class</span>, origSel);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (!origMethod) &#123;</div><div class="line">        <span class="comment">// 手动添加方法</span></div><div class="line">        class_addMethod([<span class="keyword">self</span> <span class="keyword">class</span>], origSel, method_getImplementation(newMethod), method_getTypeEncoding(newMethod));</div><div class="line">        origMethod = class_getInstanceMethod(<span class="keyword">class</span>, origSel);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (!origMethod) &#123;</div><div class="line">        <span class="keyword">@throw</span> [<span class="built_in">NSException</span> exceptionWithName:<span class="string">@"Original method not found"</span> reason:<span class="literal">nil</span> userInfo:<span class="literal">nil</span>];</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="keyword">if</span> (!newMethod) &#123;</div><div class="line">        newMethod = class_getClassMethod(<span class="keyword">class</span>, newSel);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (!newMethod) &#123;</div><div class="line">        <span class="keyword">@throw</span> [<span class="built_in">NSException</span> exceptionWithName:<span class="string">@"New method not found"</span> reason:<span class="literal">nil</span> userInfo:<span class="literal">nil</span>];</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (origMethod == newMethod) &#123;</div><div class="line">        <span class="keyword">@throw</span> [<span class="built_in">NSException</span> exceptionWithName:<span class="string">@"Methods are the same"</span> reason:<span class="literal">nil</span> userInfo:<span class="literal">nil</span>];</div><div class="line">    &#125;</div><div class="line">    method_exchangeImplementations(origMethod, newMethod);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<p>然后在pch导入<code>NSObject+Base</code>，就可以在所有类使用啦，例如在上面的例子的<code>UIViewController+Base</code>：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">UIViewController</span> (<span class="title">Base</span>)</span></div><div class="line"></div><div class="line">+ (<span class="keyword">void</span>)load &#123;</div><div class="line">    </div><div class="line">    EXCHANGE_METHOD(viewDidLoad, myViewDidLoad);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)myViewDidLoad &#123;</div><div class="line"></div><div class="line">    <span class="keyword">self</span>.view.backgroundColor = [<span class="built_in">UIColor</span> yellowColor];</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<p>一样可以改背景色。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>第一种只是简单利用宏去掉警告，二三方法本质是相同的，利用runtime交换方法，看实际情况运用。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://jacknehc.github.io">JackNehc</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://jacknehc.github.io/2018/07/03/OC利用Category重写父类方法/">https://jacknehc.github.io/2018/07/03/OC利用Category重写父类方法/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/iOS/">iOS</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2018/06/22/建立CocoaPods私人库/">
+        <span class="next-text nav-default">建立CocoaPods私人库</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:894502621@qq.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+        
+          <a href="https://github.com/JackNehc" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+
+    <p>Stay Hungry. Stay Foolish.</p>
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">JackNehc</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.6.0"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.6.0"></script>
+
+  </body>
+</html>
+
