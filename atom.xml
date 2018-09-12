@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://jacknehc.github.io/"/>
-  <updated>2018-07-04T02:48:12.218Z</updated>
+  <updated>2018-09-12T14:26:01.095Z</updated>
   <id>https://jacknehc.github.io/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>更新CocoaPods私人库</title>
+    <link href="https://jacknehc.github.io/2018/09/12/%E6%9B%B4%E6%96%B0CocoaPods%E7%A7%81%E4%BA%BA%E5%BA%93/"/>
+    <id>https://jacknehc.github.io/2018/09/12/更新CocoaPods私人库/</id>
+    <published>2018-09-12T14:01:12.000Z</published>
+    <updated>2018-09-12T14:26:01.095Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇讲了如何创建自己的pod私人库，要更新怎么办咧？</p><a id="more"></a><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>这里可以分为两种，一种是正常的版本更新，具有意义的版本更新，例如修改了某个bug，新增了什么借口。另一种是小修小改，例如接口名字的小改动，某个单词写错等没必要迭代版本的更新。这两种分别有不同的做法：</p><h3 id="正常版本迭代"><a href="#正常版本迭代" class="headerlink" title="正常版本迭代"></a>正常版本迭代</h3><ol><li><p>把修改了的代码提交</p> <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> 你代码位置</div><div class="line"></div><div class="line">git commit -a -m <span class="string">"update ..."</span></div><div class="line"></div><div class="line">git push origin master</div></pre></td></tr></table></figure></li><li><p>给你刚提交的代码打tag</p></li><li><p>pod验证并提交更新你代码对应的spec</p> <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pod spec lint --private --allow-warnings</div><div class="line"></div><div class="line">pod repo push JNExtensionComponentSpec JNExtensionComponent.podspec --allow-warnings</div></pre></td></tr></table></figure></li><li><p>最后到你项目profile更改版本号然后执行更新就好了</p> <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pod install</div></pre></td></tr></table></figure></li></ol><h3 id="小改动（不更新版本号）"><a href="#小改动（不更新版本号）" class="headerlink" title="小改动（不更新版本号）"></a>小改动（不更新版本号）</h3><ol><li><p>第一步和上面第一步一样</p></li><li><p>终端查看pod缓存列表，找到你要更新的库，并删除缓存</p> <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pod cache list</div><div class="line"></div><div class="line">pod cache clean 你的库</div></pre></td></tr></table></figure></li><li><p>项目删除你要更新的库，然后再更新就可以拿到最新的代码了</p> <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pod install</div></pre></td></tr></table></figure></li></ol><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://guides.cocoapods.org/making/using-pod-lib-create" target="_blank" rel="external">CocoaPods官方文档</a></p><p><a href="http://www.cocoachina.com/ios/20150228/11206.html" target="_blank" rel="external">使用Cocoapods创建私有podspec</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;上一篇讲了如何创建自己的pod私人库，要更新怎么办咧？&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="记录" scheme="https://jacknehc.github.io/categories/%E8%AE%B0%E5%BD%95/"/>
+    
+    
+      <category term="CocoaPods" scheme="https://jacknehc.github.io/tags/CocoaPods/"/>
+    
+  </entry>
   
   <entry>
     <title>OC利用Category重写父类方法</title>
