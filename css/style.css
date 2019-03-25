@@ -930,7 +930,8 @@ h6 {
         min-width: 200px;
         width: 40%; }
       .post .post-reward .qr-code .image {
-        height: 50%; }
+        width: 200px;
+        height: 200px; }
   .post .post-footer {
     margin-top: 20px;
     border-top: 1px solid #e6e6e6;
