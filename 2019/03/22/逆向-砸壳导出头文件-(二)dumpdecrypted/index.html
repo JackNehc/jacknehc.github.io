@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="逆向-砸壳导出头文件(二)dumpdecrypted"/>
+
+
+
+
+  <meta name="keywords" content="iOS, 逆向, JackNehc" />
+
+
+
+  <meta name="baidu-site-verification" content="h3V2TVXxAH" />
+
+
+
+
+
+
+<meta name="google-site-verification" content="NDRrv2T33s-v5Js44AeEhilcymaO3IYCA8V668w-3FI" />
+
+
+
+  <link rel="alternate" href="/atom.xml" title="JackNehc">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.6.0" />
+
+
+
+<link rel="canonical" href="https://jacknehc.github.io/2019/03/22/逆向-砸壳导出头文件-(二)dumpdecrypted/"/>
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6.0" />
+
+
+
+
+
+
+  
+  <script id="baidu_analytics">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?9333fc0facbdc5308669a44a1c6ed08c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "mdF4nOlv42Nnv7TAzJHRiMxn-gzGzoHsz",
+      appKey: "LsmI2pcySPBxqxOlPfxdN8fJ"
+    });
+  </script>
+
+
+
+
+
+
+    <title> 逆向-砸壳导出头文件(二)dumpdecrypted - JackNehc </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">JackNehc</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/categories">
+        <li class="mobile-menu-item">
+          
+          
+            分类
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">JackNehc</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/categories">
+            
+            
+              分类
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          逆向-砸壳导出头文件(二)dumpdecrypted
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-03-22
+        </span>
+        
+          <div class="post-category">
+            
+              <a href="/categories/记录/">记录</a>
+            
+          </div>
+        
+        
+        <div class="post-visits"
+             data-url="/2019/03/22/逆向-砸壳导出头文件-(二)dumpdecrypted/"
+             data-title="逆向-砸壳导出头文件(二)dumpdecrypted">
+            阅读次数
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#准备"><span class="toc-text">准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#过程"><span class="toc-text">过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#安装dumpdecrypted"><span class="toc-text">安装dumpdecrypted</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#砸壳"><span class="toc-text">砸壳</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导出头文件"><span class="toc-text">导出头文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </div>
+
+
+    <div class="post-content">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="">上一篇</a>介绍了用Clutch砸壳方法，<strong>这一篇介绍的是第二种方式-dumpdecrypted</strong>，dumpdecrypted与Clutch不同，他是需要app运行起来（iOS系统会先解密程序再启动），然后从内存中将解密结果dump写入文件中，得到一个新的可执行程序。</p>
+<ul>
+<li><a href="">Clutch</a></li>
+</ul>
+<ul>
+<li><a href=""><strong>dumpdecrypted</strong></a></li>
+</ul>
+<ul>
+<li><a href="">frida</a></li>
+</ul>
+<a id="more"></a>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><ol>
+<li><p>越狱的iPhone</p>
+<ul>
+<li>Cydia安装OpenSSH（Mac 上远程输入命令操作 iOS 设备）</li>
+<li>Cydia安装Cycript</li>
+<li><p>Cydia安装Apple File Conduit “2”（方便ifunbox等工具访问iOS系统目录）</p>
+<p>  安装 afc2add 也是一样，不过我在安装 <strong>afc2add</strong> 后无法访问系统目录，才用 <strong>Apple File Conduit “2”</strong> 这个插件的，这个插件要通过添加 <strong>apt.25pp.com</strong> 这个源来装，你用Cydia的源访问不了，应该是要翻墙。<br>  <strong>(这里小记录下，每次重新越狱， Apple File Conduit “2” 这个插件都要重新安装一遍，不然会失效)</strong></p>
+</li>
+</ul>
+</li>
+</ol>
+<ol>
+<li><p>电脑安装ifunbox，usbmuxd，class-dump</p>
+<ul>
+<li>iFunBox自己找</li>
+<li><p>usbmuxd可通过下面命令安装，前提是你Mac装了Homebrew</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install usbmuxd</div></pre></td></tr></table></figure>
+</li>
+<li><p>如果你安装了或者打算装 <a href="https://monkeydev.org/" target="_blank" rel="external">Monkey Dev</a> 的，就可以不用装 <strong>class-dump</strong>，因为它里面已经自带了。自己安装 <strong>class-dump</strong> 可以通过此<a href="http://stevenygard.com/projects/class-dump/" target="_blank" rel="external">地址</a>下载，下载后打开，把里面的 <strong>class-dump</strong> 复制到 <strong>/usr/local/bin</strong> 路径下，打开终端，执行：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">class-dump</div></pre></td></tr></table></figure>
+<p>  成功安装好class-dump~<br>  <img src="/2019/03/22/逆向-砸壳导出头文件-(二)dumpdecrypted/逆向-砸壳导出头文件-(二" alt="">dumpdecrypted/class-dump命令成功.png)</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><h3 id="安装dumpdecrypted"><a href="#安装dumpdecrypted" class="headerlink" title="安装dumpdecrypted"></a>安装dumpdecrypted</h3><ol>
+<li><p>先从GitHub下载dumpdecrypted</p>
+<p> 下载地址：<a href="https://github.com/stefanesser/dumpdecrypted" target="_blank" rel="external">https://github.com/stefanesser/dumpdecrypted</a></p>
+</li>
+<li><p>dumpdecrypted生成dylib动态库</p>
+<p> 解压刚下载的dumpdecrypted-master.zip，终端cd到解压完的路径下，执行make，得到这两个文件</p>
+<p> <img src="/2019/03/22/逆向-砸壳导出头文件-(二)dumpdecrypted/逆向-砸壳导出头文件-(二" alt="">dumpdecrypted/编译得到dumpdecrypted动态库.png)</p>
+</li>
+</ol>
+<ol>
+<li><p>ssh连接iPhone</p>
+<ul>
+<li><p>由于Mac上只支持4位的端口号，所以需要把iPhone的默认端口22映射到Mac上，相当于建立一个Mac和iPhone之间的通道。打开终端，执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">	iproxy 12345 22</div><div class="line">	``` </div><div class="line">	</div><div class="line">* 	这时终端会显示 **waiting <span class="keyword">for</span> connection** 这表示我们已经搭建好Mac和iPhone的通道，现在我们直接和本地的12345端口通信就能和iPhone通信了。保持上一个命令显示的状态，新建个终端执行：</div><div class="line"></div><div class="line">	``` bash</div><div class="line">	ssh -p 12345 root@127.0.0.1</div></pre></td></tr></table></figure>
+<p>如果要你输入密码则输入：<strong>alpine</strong>，显示 <strong>iPhone:~ root#</strong> 代表成功，你可以在后面输入命令操作设备啦。</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="砸壳"><a href="#砸壳" class="headerlink" title="砸壳"></a>砸壳</h3><ol>
+<li><p>因为dumpdecrypted是通过利用苹果解密运行起App，再从内存中把解密的文件导出来，所以我们要先把要砸壳的App运行起来，为了方便查找，最好只保留这个App运行中，其他的杀掉，我们执行此命令查看当前手机所有进程：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">iPhone:~ root<span class="comment"># ps -e</span></div><div class="line"> PID TTY           TIME CMD</div><div class="line">   1 ??         1:55.62 /sbin/launchd</div><div class="line">  19 ??         0:02.34 /usr/sbin/syslogd</div><div class="line">  20 ??         6:18.52 /usr/libexec/UserEventAgent (System)</div><div class="line">  21 ??         0:00.25 /System/Library/PrivateFrameworks/FileProvider.framework/Support/fileproviderd</div><div class="line">  22 ??         0:03.61 /System/Library/PrivateFrameworks/AssistantServices.framework/assistantd</div><div class="line">  24 ??         0:25.35 /usr/libexec/fseventsd</div><div class="line"> ...</div><div class="line">  2088 ??         0:03.26 /Applications/MobileMail.app/MobileMail</div><div class="line">2093 ??         0:00.24 /System/Library/PrivateFrameworks/CoreRecents.framework/recentsd</div><div class="line">2109 ??         0:07.59 /Applications/AppStore.app/AppStore</div><div class="line">2114 ??         0:00.18 /System/Library/PrivateFrameworks/FamilyCircle.framework/familycircled</div><div class="line">2117 ??         0:02.71 /var/containers/Bundle/Application/9A36EC10-CE81-4D44-8F5E-2B4F70F3B3D4/WeChat.app/WeChat</div><div class="line">2053 ttys000    0:00.04 -sh</div><div class="line">2118 ttys000    0:00.01 ps -e</div></pre></td></tr></table></figure>
+<p> 我这次要砸壳的是微信，仔细看了下，找到了个weichat的（一般在后面部分），看到 <strong>/var/containers/Bundle/Application/9A36EC10-CE81-4D44-8F5E-2B4F70F3B3D4/WeChat.app/WeChat</strong> 没，这个路径是App可执行文件的路径，我们等下要砸的就是它。记住这个路径和他前面的序号2117，序号是为了获取App的沙盒路径，为什么要拿到这个路径，因为我们要把 <strong>dumpdecrypted.dylib文件</strong> 放到此路径下，只有这个路径下，App才有读写权限，才能执行砸壳操作。</p>
+<p> 下面是获取App的沙盒路径，所以在cy下我们执行：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">iPhone:~ root<span class="comment"># cycript -p 1112</span></div><div class="line">cy<span class="comment"># [NSHomeDirectory() stringByAppendingString:@"/Documents"]</span></div><div class="line">@<span class="string">"/var/mobile/Containers/Data/Application/E3FD1B0F-E837-465A-A8F3-17EBD3B575DF/Documents"</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<pre><code>成功拿到App沙盒路径，直接通过iFunBox拖动编译得到的 **dumpdecrypted.dylib文件** 到的 **Device/var/mobile/Containers/Data/Application/E3FD1B0F-E837-465A-A8F3-17EBD3B575DF/Documents** 目录下。没有的iFunBox的话用此命令也行：
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scp -P 12345 &lt;Mac上dumpdecrypted.dylib的路径&gt; root@localhost:/var/mobile/Containers/Data/Application/E3FD1B0F-E837-465A-A8F3-17EBD3B575DF/Documents/</div></pre></td></tr></table></figure>
+
+
+我们到沙盒路径下检查看是否拷贝成功（使用control+d 或者 输入exit(0)命令 退出cycript）：
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">	iPhone:~ root<span class="comment"># cd /var/mobile/Containers/Data/Application/3B95C567-569F-4B83-951F-14208A203C28/Documents/</span></div><div class="line">iPhone:/var/mobile/Containers/Data/Application/3B95C567-569F-4B83-951F-14208A203C28/Documents root<span class="comment"># ls</span></div><div class="line">00000000000000000000000000000000  LocalInfo.lst  MMappedKV   OpenImResource  dumpdecrypted.dylib</div><div class="line">CrashReport			  MMResourceMgr  MemoryStat  SafeMode.dat    heavy_user_id_mapping.dat</div></pre></td></tr></table></figure>
+
+
+确认存在，那可以进行砸壳了。
+</code></pre><ol>
+<li><p>砸壳</p>
+<p> 直接执行命令砸壳：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DYLD_INSERT_LIBRARIES=dumpdecrypted.dylib /var/containers/Bundle/Application/9A36EC10-CE81-4D44-8F5E-2B4F70F3B3D4/WeChat.app/WeChat</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<pre><code>哎呀呀报错啦：
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">iPhone:/var/mobile/Containers/Data/Application/3B95C567-569F-4B83-951F-14208A203C28/Documents root<span class="comment"># DYLD_INSERT_LIBRARIES=dumpdecrypted.dylib /var/containers/Bundle/Application/9A36EC10-CE81-4D44-8F5E-2B4F70F3B3D4/WeChat.app/WeChat</span></div><div class="line"></div><div class="line">dyld: could not load inserted library <span class="string">'dumpdecrypted.dylib'</span> because no suitable image found.  Did find:</div><div class="line">	dumpdecrypted.dylib: required code signature missing <span class="keyword">for</span> <span class="string">'dumpdecrypted.dylib'</span></div><div class="line">	</div><div class="line">	/private/var/mobile/Containers/Data/Application/3B95C567-569F-4B83-951F-14208A203C28/Documents/dumpdecrypted.dylib: required code signature missing <span class="keyword">for</span> <span class="string">'/private/var/mobile/Containers/Data/Application/3B95C567-569F-4B83-951F-14208A203C28/Documents/dumpdecrypted.dylib'</span></div></pre></td></tr></table></figure>
+
+很明显，说我们没签名呢，给 **dumpdecrypted.dylib** 签个名再重复刚才拷贝到App沙盒路径的步骤，以下是签名方法：
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">## 列出可签名证书</span></div><div class="line">security find-identity -v -p codesigning</div><div class="line"><span class="comment">## 从上面的证书选一个为dumpecrypted.dylib签名</span></div><div class="line">codesign --force --verify --verbose --sign <span class="string">"iPhone Developer: xxx xxxx (xxxxxxxxxx)"</span> dumpdecrypted.dylib</div></pre></td></tr></table></figure>
+
+签名成功：
+![](逆向-砸壳导出头文件-(二)dumpdecrypted/给dumpdecrypted签名.png)
+
+把这个签名后的 **dumpdecrypted.dylib** 替换刚才App沙盒路径下的 **dumpdecrypted.dylib**，重新执行：
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">iPhone:/var/mobile/Containers/Data/Application/3B95C567-569F-4B83-951F-14208A203C28/Documents root<span class="comment"># DYLD_INSERT_LIBRARIES=dumpdecrypted.dylib /var/containers/Bundle/Application/9A36EC10-CE81-4D44-8F5E-2B4F70F3B3D4/WeChat.app/WeChat</span></div><div class="line">objc[2172]: Class MarsReachability is implemented <span class="keyword">in</span> both /private/var/containers/Bundle/Application/9A36EC10-CE81-4D44-8F5E-2B4F70F3B3D4/WeChat.app/Frameworks/mars.framework/mars (0x10c9454c0) and /private/var/containers/Bundle/Application/9A36EC10-CE81-4D44-8F5E-2B4F70F3B3D4/WeChat.app/Frameworks/ConfSDK.framework/ConfSDK (0x10c1adc00). One of the two will be used. Which one is undefined.</div><div class="line">objc[2172]: Class MarsReachability is implemented <span class="keyword">in</span> both /private/var/containers/Bundle/Application/9A36EC10-CE81-4D44-8F5E-2B4F70F3B3D4/WeChat.app/Frameworks/mars.framework/mars (0x10c9454c0) and /private/var/containers/Bundle/Application/9A36EC10-CE81-4D44-8F5E-2B4F70F3B3D4/WeChat.app/Frameworks/matrixreport.framework/matrixreport (0x105175590). One of the two will be used. Which one is undefined.</div><div class="line">objc[2172]: Class AVPlayerView is implemented <span class="keyword">in</span> both /System/Library/Frameworks/AVKit.framework/AVKit (0x1b4954298) and /var/containers/Bundle/Application/9A36EC10-CE81-4D44-8F5E-2B4F70F3B3D4/WeChat.app/WeChat (0x104b856f0). One of the two will be used. Which one is undefined.</div><div class="line">mach-o decryption dumper</div><div class="line"></div><div class="line">DISCLAIMER: This tool is only meant <span class="keyword">for</span> security research purposes, not <span class="keyword">for</span> application crackers.</div><div class="line"></div><div class="line">[+] detected 64bit ARM binary <span class="keyword">in</span> memory.</div><div class="line">[+] offset to cryptid found: @0x100004ca8(from 0x100004000) = ca8</div><div class="line">[+] Found encrypted data at address 00004000 of length 65617920 bytes - <span class="built_in">type</span> 1.</div><div class="line">[+] Opening /private/var/containers/Bundle/Application/9A36EC10-CE81-4D44-8F5E-2B4F70F3B3D4/WeChat.app/WeChat <span class="keyword">for</span> reading.</div><div class="line">[+] Reading header</div><div class="line">[+] Detecting header <span class="built_in">type</span></div><div class="line">[+] Executable is a plain MACH-O image</div><div class="line">[+] Opening WeChat.decrypted <span class="keyword">for</span> writing.</div><div class="line">[+] Copying the not encrypted start of the file</div><div class="line">[+] Dumping the decrypted data into the file</div><div class="line">[+] Copying the not encrypted remainder of the file</div><div class="line">[+] Setting the LC_ENCRYPTION_INFO-&gt;cryptid to 0 at offset ca8</div><div class="line">[+] Closing original file</div><div class="line">[+] Closing dump file</div></pre></td></tr></table></figure>
+
+至此，砸壳成功，毫无意外，我们会在沙盒路径下发现多了个新文件：
+
+![](逆向-砸壳导出头文件-(二)dumpdecrypted/dumpdecrypted砸壳成功生成的文件.png)
+
+这就是我们要的脱壳文件啦
+</code></pre><h3 id="导出头文件"><a href="#导出头文件" class="headerlink" title="导出头文件"></a>导出头文件</h3><ol>
+<li><p>拿到可执行文件</p>
+<p> 从上面砸壳我们已经成功得到砸完壳，现在只要把 <strong>WeChat.decrypted</strong> 这个文件从手机复制出来放到你喜欢的路径下（用iFunBox或者scp命令），我们要利用这个文件来导出头文件。</p>
+</li>
+<li><p>导出头文件</p>
+<p> 用class-dump导出头文件，到终端执行：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">class-dump -H &lt;你放WeChat.decrypted文件的路径&gt; -o &lt;你打算放导出的头文件的文件夹路径&gt;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<pre><code>喝杯咖啡，emmmm，头文件就出来啦。
+</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此，dumpdecrypted砸壳&amp;获取头文件完毕，和Clutch最后一样，你可以用ida来打开上面得到<strong>WeChat.decrypted</strong>，弄完是不是觉得dumpdecrypted有点麻烦呢？没关系，第三种砸壳方法-Frida，是最方便省事的方式，站在巨人的肩膀简直不要太爽哈哈~请接下看下一篇。</p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://jacknehc.github.io">JackNehc</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://jacknehc.github.io/2019/03/22/逆向-砸壳导出头文件-(二)dumpdecrypted/">https://jacknehc.github.io/2019/03/22/逆向-砸壳导出头文件-(二)dumpdecrypted/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+  <div class="post-reward">
+    <input type="checkbox" name="reward" id="reward" hidden />
+    <label class="reward-button" for="reward">赞赏支持</label>
+    <div class="qr-code">
+      
+      
+        <label class="qr-code-image" for="reward">
+          <p>微信</p>
+          <img class="image" src="/image/reward/wechatPay.png" title="wechat">
+        </label>
+      
+      
+        <label class="qr-code-image" for="reward">
+          <p>支付宝</p>
+          <img class="image" src="/image/reward/alipay.png" title="alipay">
+        </label>
+      
+    </div>
+  </div>
+
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/iOS/">iOS</a>
+            
+              <a href="/tags/逆向/">逆向</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2019/03/28/逆向-砸壳导出头文件-(三)frida/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">逆向-砸壳导出头文件(三)frida</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/2019/03/17/逆向-砸壳导出头文件-(一)Clutch/">
+        <span class="next-text nav-default">逆向-砸壳导出头文件-(一)Clutch</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:894502621@qq.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+        
+          <a href="https://github.com/JackNehc" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+
+    <p>Stay Hungry. Stay Foolish.</p>
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2019
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">JackNehc</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  
+
+  
+
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.6.0"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.6.0"></script>
+
+  </body>
+</html>
+
