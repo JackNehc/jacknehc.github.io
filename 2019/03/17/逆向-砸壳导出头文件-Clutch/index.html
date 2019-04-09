@@ -46,7 +46,7 @@
 
 
 
-<link rel="canonical" href="https://jacknehc.github.io/2019/03/17/逆向-砸壳导出头文件-(一)Clutch/"/>
+<link rel="canonical" href="https://jacknehc.github.io/2019/03/17/逆向-砸壳导出头文件-Clutch/"/>
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6.0" />
@@ -253,7 +253,7 @@
         
         
         <div class="post-visits"
-             data-url="/2019/03/17/逆向-砸壳导出头文件-(一)Clutch/"
+             data-url="/2019/03/17/逆向-砸壳导出头文件-Clutch/"
              data-title="逆向-砸壳导出头文件-(一)Clutch">
             阅读次数
           </div>
@@ -275,11 +275,9 @@
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近想了解别人app的一个功能实现，入了逆向的坑，也当做一次更深了解oc底层的机会。前前后后看了几篇相关文章，就拿个App练了练手，在此记录下学习过程，方便以后回忆。首先，上传到AppStore的App都是经过苹果签名加密的（具体加密过程可以看我写的这篇<a href="/2018/06/22/苹果真机测试原理/">文章</a>），所以我们要拿到App代码的头文件，必须解密，俗称砸壳，接下来，我会用以下三种工具来实现砸壳并且导出头文件。<strong>此篇介绍的是Clutch</strong>。</p>
 <ul>
-<li><a href=""><strong>Clutch</strong></a></li>
-</ul>
-<ul>
-<li><a href="">dumpdecrypted</a></li>
-<li><a href="">frida</a></li>
+<li><a href="/2019/03/17/逆向-砸壳导出头文件-Clutch/"><strong>Clutch</strong></a></li>
+<li><a href="/2019/03/22/逆向-砸壳导出头文件-dumpdecrypted/">dumpdecrypted</a></li>
+<li><a href="/2019/03/28/逆向-砸壳导出头文件-frida/">frida</a></li>
 </ul>
 <a id="more"></a>
 <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><ol>
@@ -291,41 +289,36 @@
 </li>
 </ul>
 </li>
-</ol>
-<ol>
 <li><p>电脑安装ifunbox，usbmuxd，class-dump</p>
 <ul>
 <li><p>iFunBox自己找，主要用来iPhone和Mac传输文件，实在不用也行，可用scp命令代替</p>
-<p>usb连接手机情况下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">scp -P 12345 root@localhost:&lt;手机上文件的路径&gt; &lt;复制的文件存放到电脑的路径&gt;</div><div class="line">scp -P 12345 &lt;电脑上文件的路径&gt; root@localhost:&lt;复制的文件存放到手机的路径&gt;</div></pre></td></tr></table></figure>
+<p>  usb连接手机情况下：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">scp -P 12345 root@localhost:&lt;手机上文件的路径&gt; &lt;复制的文件存放到电脑的路径&gt;</div><div class="line">scp -P 12345 &lt;电脑上文件的路径&gt; root@localhost:&lt;复制的文件存放到手机的路径&gt;</div></pre></td></tr></table></figure>
+<p>  wifi连接手机情况下：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">scp &lt;电脑上文件的路径&gt; root@越狱机ip地址:&lt;复制的文件存放到手机的路径&gt;</div><div class="line">scp root@越狱机ip地址:&lt;手机上文件的路径&gt; &lt;复制的文件存放到电脑的路径&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>usbmuxd可通过下面命令安装，前提是你Mac装了Homebrew</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install usbmuxd</div></pre></td></tr></table></figure>
+</li>
+<li><p>如果你安装了或者打算装 <a href="https://monkeydev.org/" target="_blank" rel="external">Monkey Dev</a> 的，就可以不用装 <strong>class-dump</strong>，因为它里面已经自带了。自己安装 <strong>class-dump</strong> 可以通过此<a href="http://stevenygard.com/projects/class-dump/" target="_blank" rel="external">地址</a>下载，下载后打开，把里面的 <strong>class-dump</strong> 复制到 <strong>/usr/local/bin</strong> 路径下，打开终端，执行：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">class-dump</div></pre></td></tr></table></figure>
+<p>  成功安装好class-dump~<br>  <img src="/2019/03/17/逆向-砸壳导出头文件-Clutch/class-dump命令成功.png" alt=""></p>
 </li>
 </ul>
 </li>
 </ol>
-<pre><code>    wifi连接手机情况下：
-
-    <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">scp &lt;电脑上文件的路径&gt; root@越狱机ip地址:&lt;复制的文件存放到手机的路径&gt;</div><div class="line">scp root@越狱机ip地址:&lt;手机上文件的路径&gt; &lt;复制的文件存放到电脑的路径&gt;</div></pre></td></tr></table></figure>
-
-
-*  usbmuxd可通过下面命令安装，前提是你Mac装了Homebrew
-
-    <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install usbmuxd</div></pre></td></tr></table></figure>
-
-* 如果你安装了或者打算装 [Monkey Dev](https://monkeydev.org/) 的，就可以不用装 **class-dump**，因为它里面已经自带了。自己安装 **class-dump** 可以通过此[地址](http://stevenygard.com/projects/class-dump/)下载，下载后打开，把里面的 **class-dump** 复制到 **/usr/local/bin** 路径下，打开终端，执行：
-
-    <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">class-dump</div></pre></td></tr></table></figure>
-
-    成功安装好class-dump~
-    ![](逆向-砸壳导出头文件-(一)Clutch/class-dump命令成功.png)
-</code></pre><h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><h3 id="安装Clutch"><a href="#安装Clutch" class="headerlink" title="安装Clutch"></a>安装Clutch</h3><ol>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><h3 id="安装Clutch"><a href="#安装Clutch" class="headerlink" title="安装Clutch"></a>安装Clutch</h3><ol>
 <li><p>先从GitHub下载最新Clutch</p>
 <p> 下载地址：<a href="https://github.com/KJCracks/Clutch/releases" target="_blank" rel="external">https://github.com/KJCracks/Clutch/releases</a></p>
 </li>
 <li><p>ssh连接iPhone</p>
 <ul>
 <li><p>由于Mac上只支持4位的端口号，所以需要把iPhone的默认端口22映射到Mac上，相当于建立一个Mac和iPhone之间的通道。打开终端，执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">	iproxy 12345 22</div><div class="line">	``` </div><div class="line">	</div><div class="line">* 	这时终端会显示 **waiting <span class="keyword">for</span> connection** 这表示我们已经搭建好Mac和iPhone的通道，现在我们直接和本地的12345端口通信就能和iPhone通信了。保持上一个命令显示的状态，新建个终端执行：</div><div class="line"></div><div class="line">	``` bash</div><div class="line">	ssh -p 12345 root@127.0.0.1</div></pre></td></tr></table></figure>
-<p>如果要你输入密码则输入：<strong>alpine</strong>，显示 <strong>iPhone:~ root#</strong> 代表成功，你可以在后面输入命令操作设备啦。</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iproxy 12345 22</div></pre></td></tr></table></figure>
+</li>
+<li><p>这时终端会显示 <strong>waiting for connection</strong> 这表示我们已经搭建好Mac和iPhone的通道，现在我们直接和本地的12345端口通信就能和iPhone通信了。保持上一个命令显示的状态，新建个终端执行：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh -p 12345 root@127.0.0.1</div></pre></td></tr></table></figure>
+<p>  如果要你输入密码则输入：<strong>alpine</strong>，显示 <strong>iPhone:~ root#</strong> 代表成功，你可以在后面输入命令操作设备啦。</p>
 </li>
 </ul>
 </li>
@@ -340,42 +333,39 @@
 <p> 直接执行：</p>
  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">	iPhone:/usr/bin root<span class="comment"># Clutch-2.0.4</span></div><div class="line">-sh: /usr/bin/Clutch-2.0.4: Permission denied</div></pre></td></tr></table></figure>
 <p> 这是因为没有权限，给他加一下就好了</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">	iPhone:/usr/bin root<span class="comment"># chmod +x Clutch-2.0.4</span></div><div class="line">iPhone:/usr/bin root<span class="comment"># Clutch-2.0.4</span></div><div class="line">Usage: Clutch-2.0.4 [OPTIONS]</div><div class="line">-b --binary-dump &lt;value&gt; Only dump binary files from specified bundleID</div><div class="line">-d --dump &lt;value&gt;        Dump specified bundleID into .ipa file</div><div class="line">-i --<span class="built_in">print</span>-installed     Print installed applications</div><div class="line">   --clean               Clean /var/tmp/clutch directory</div><div class="line">   --version             Display version and <span class="built_in">exit</span></div><div class="line">-? --<span class="built_in">help</span>                Display this <span class="built_in">help</span> and <span class="built_in">exit</span></div><div class="line">-n --no-color            Print with colors disabled</div></pre></td></tr></table></figure>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">iPhone:/usr/bin root<span class="comment"># chmod +x Clutch-2.0.4</span></div><div class="line">iPhone:/usr/bin root<span class="comment"># Clutch-2.0.4</span></div><div class="line">Usage: Clutch-2.0.4 [OPTIONS]</div><div class="line">-b --binary-dump &lt;value&gt; Only dump binary files from specified bundleID</div><div class="line">-d --dump &lt;value&gt;        Dump specified bundleID into .ipa file</div><div class="line">-i --<span class="built_in">print</span>-installed     Print installed applications</div><div class="line">   --clean               Clean /var/tmp/clutch directory</div><div class="line">   --version             Display version and <span class="built_in">exit</span></div><div class="line">-? --<span class="built_in">help</span>                Display this <span class="built_in">help</span> and <span class="built_in">exit</span></div><div class="line">-n --no-color            Print with colors disabled</div></pre></td></tr></table></figure>
+<p> 这里很明显成功了，可以砸壳了。</p>
 </li>
-</ol>
-<pre><code>这里很明显成功了，可以砸壳了。
-</code></pre><ol>
 <li><p>找出要砸壳app的包名，砸壳</p>
 <p> 我们执行这句查看手机安装的App：</p>
  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">iPhone:/usr/bin root<span class="comment"># Clutch-2.0.4 -i</span></div><div class="line">Installed apps:</div><div class="line">1:   微信 &lt;com.tencent.xin&gt;</div><div class="line">2:   大众点评-分享你的潮生活 &lt;com.dianping.dpscope&gt;</div><div class="line">3:   Keep - 自由运动场 &lt;com.gotokeep.keep&gt;</div></pre></td></tr></table></figure>
+<p> 找到你想砸壳的App，复制他的包名，执行：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">iPhone:/usr/bin root<span class="comment"># Clutch-2.0.4 -d com.tencent.xin</span></div><div class="line">Zipping MacauLife.app</div><div class="line">ASLR slide: 0x10009c000</div><div class="line">Dumping &lt;MacauLife&gt; (arm64)</div><div class="line">...</div><div class="line">DONE: /private/var/mobile/Documents/Dumped/com.tencent.xin-iOS9.0-(Clutch-2.0.4).ipa</div><div class="line">Finished dumping com.tencent.xin <span class="keyword">in</span> 17.6 seconds</div></pre></td></tr></table></figure>
+<p> 砸壳成功~</p>
 </li>
 </ol>
-<pre><code>找到你想砸壳的App，复制他的包名，执行：
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">iPhone:/usr/bin root<span class="comment"># Clutch-2.0.4 -d com.tencent.xin</span></div><div class="line">Zipping MacauLife.app</div><div class="line">ASLR slide: 0x10009c000</div><div class="line">Dumping &lt;MacauLife&gt; (arm64)</div><div class="line">...</div><div class="line">DONE: /private/var/mobile/Documents/Dumped/com.tencent.xin-iOS9.0-(Clutch-2.0.4).ipa</div><div class="line">Finished dumping com.tencent.xin <span class="keyword">in</span> 17.6 seconds</div></pre></td></tr></table></figure>
-
-砸壳成功~
-</code></pre><h3 id="导出头文件"><a href="#导出头文件" class="headerlink" title="导出头文件"></a>导出头文件</h3><ol>
+<h3 id="导出头文件"><a href="#导出头文件" class="headerlink" title="导出头文件"></a>导出头文件</h3><ol>
 <li><p>拿到可执行文件</p>
 <p> 从上面砸壳我们已经成功得到砸完壳的ipa包了，接着只要根据返回的路径，从iFunBox找到ipa包，拖到你的Mac电脑上，右键解压，然后你会发现一个Payload文件夹，右键显示包内容，在里面找到 <strong>WeChat</strong> 这个文件，把它复制出来放到你喜欢的路径下，这就是微信的可执行文件啦，我们要利用这个文件来导出头文件。</p>
-<p> <img src="/2019/03/17/逆向-砸壳导出头文件-(一)Clutch/逆向-砸壳导出头文件-(一" alt="">Clutch/显示微信包内容.png)<br> <img src="/2019/03/17/逆向-砸壳导出头文件-(一)Clutch/逆向-砸壳导出头文件-(一" alt="">Clutch/WeChat可执行文件.png)</p>
+<p> <img src="/2019/03/17/逆向-砸壳导出头文件-Clutch/显示微信包内容.png" alt=""></p>
+<p> <img src="/2019/03/17/逆向-砸壳导出头文件-Clutch/WeChat可执行文件.png" alt=""></p>
 <p> 如果没有iFunBox可以用命令代替这个操作：</p>
  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scp -P 12345 root@localhost:/private/var/mobile/Documents/Dumped/com.tencent.xin-iOS9.0-\\\(Clutch-2.0.4\\\).ipa ~/</div></pre></td></tr></table></figure>
-<p> <img src="/2019/03/17/逆向-砸壳导出头文件-(一)Clutch/逆向-砸壳导出头文件-(一" alt="">Clutch/usb连接手机scp命令从手机复制文件到电脑.png)</p>
+<p> <img src="/2019/03/17/逆向-砸壳导出头文件-Clutch/usb连接手机scp命令从手机复制文件到电脑.png" alt=""></p>
 <p> 注意：</p>
 <ul>
 <li>此命令是在电脑终端执行，而不是在手机端终端下。</li>
-<li>-P 的P必须是大写，指定端口的意思。</li>
+<li>-P 的 P 必须是大写，指定端口的意思。</li>
 <li>Clutch砸壳后生成的ipa包命名有’(‘，’)’这两个符号，要加反斜杠，不然会报找不到文件问题。或者你直接用mv命令重新命名这个ipa包名，去掉括号在进行scp复制到电脑也行。</li>
 </ul>
 </li>
 <li><p>导出头文件</p>
-<p> 用class-dump导出头文件，到终端执行：</p>
+<p> 用class-dump导出头文件，到终端执行（包括两个符号’&lt;’，’&gt;’整个替换路径）：</p>
  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">class-dump -H &lt;你放WeChat可执行文件的路径&gt; -o &lt;你打算放导出的头文件的文件夹路径&gt;</div></pre></td></tr></table></figure>
+<p> 喝杯咖啡，emmmm，头文件就出来啦。</p>
 </li>
 </ol>
-<pre><code>喝杯咖啡，emmmm，头文件就出来啦。
-</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此，clutch砸壳&amp;获取头文件完毕，你可以用ida来打开上面得到可执行文件，它可以生成伪代码，免去看汇编的痛苦，配合sublime来看头文件，进而分析，学习别人App某些功能的实现。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此，clutch砸壳&amp;获取头文件完毕，你可以用ida来打开上面得到可执行文件，它可以生成伪代码，免去看汇编的痛苦，配合sublime来看头文件，进而分析，学习别人App某些功能的实现，<a href="/2019/03/22/逆向-砸壳导出头文件-dumpdecrypted/">下一篇</a>将讲用 <strong>dumpdecrypted</strong> 砸壳。</p>
 
       
     </div>
@@ -391,7 +381,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="https://jacknehc.github.io/2019/03/17/逆向-砸壳导出头文件-(一)Clutch/">https://jacknehc.github.io/2019/03/17/逆向-砸壳导出头文件-(一)Clutch/</a>
+      <a href="https://jacknehc.github.io/2019/03/17/逆向-砸壳导出头文件-Clutch/">https://jacknehc.github.io/2019/03/17/逆向-砸壳导出头文件-Clutch/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -441,7 +431,7 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2019/03/22/逆向-砸壳导出头文件-(二)dumpdecrypted/">
+      <a class="prev" href="/2019/03/22/逆向-砸壳导出头文件-dumpdecrypted/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">逆向-砸壳导出头文件(二)dumpdecrypted</span>
         <span class="prev-text nav-mobile">上一篇</span>
