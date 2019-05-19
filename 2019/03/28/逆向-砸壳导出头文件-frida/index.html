@@ -348,20 +348,15 @@
 </li>
 <li><p>保持你要砸壳的app在前台，终端执行：</p>
  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dump.py -l</div></pre></td></tr></table></figure>
+<p> 找到你想要砸壳的app，执行：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dump.py WeChat</div></pre></td></tr></table></figure>
+<p> 你会看到屏幕会一直在跳动，直到出现</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0.00B [00:00, ?B/s]Generating <span class="string">"微信.ipa"</span></div></pre></td></tr></table></figure>
+<p> 砸壳后的ipa包就已经在你运行命令的目录下了，你可以执行ls查看，并且用mv命令移到你想放的地方：</p>
+<p> <img src="/2019/03/28/逆向-砸壳导出头文件-frida/frida砸壳成功.png" alt=""></p>
 </li>
 </ol>
-<pre><code>找到你想要砸壳的app，执行：
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dump.py WeChat</div></pre></td></tr></table></figure>
-
-你会看到屏幕会一直在跳动，直到出现
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0.00B [00:00, ?B/s]Generating <span class="string">"微信.ipa"</span></div></pre></td></tr></table></figure>
-
-砸壳后的ipa包就已经在你运行命令的目录下了，你可以执行ls查看，并且用mv命令移到你想放的地方：
-
-![](/frida砸壳成功.png)
-</code></pre><h3 id="导出头文件"><a href="#导出头文件" class="headerlink" title="导出头文件"></a>导出头文件</h3><ol>
+<h3 id="导出头文件"><a href="#导出头文件" class="headerlink" title="导出头文件"></a>导出头文件</h3><ol>
 <li><p>拿到可执行文件</p>
 <p> 从上面砸壳我们已经成功得到砸完壳的ipa包了，右键解压，然后你会发现一个Payload文件夹，右键显示包内容，在里面找到 <strong>WeChat</strong> 这个文件，把它复制出来放到你喜欢的路径下，这就是微信的可执行文件啦，我们要利用这个文件来导出头文件。</p>
 </li>
