@@ -17,8 +17,12 @@
 
 
 
+  <meta name="description" content="svn使用问题&解决集锦"/>
 
 
+
+
+  <meta name="keywords" content="svn, JackNehc" />
 
 
 
@@ -42,7 +46,7 @@
 
 
 
-<link rel="canonical" href="https://jacknehc.github.io/categories/问题-解决/"/>
+<link rel="canonical" href="https://jacknehc.github.io/2019/06/01/svn报错及解决集锦/"/>
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6.0" />
@@ -98,11 +102,7 @@
 
 
 
-    <title>
-  
-    问题&解决 · JackNehc
-  
-</title>
+    <title> svn使用问题&解决集锦 - JackNehc </title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -232,73 +232,135 @@
           <div id="content" class="content">
             
   
-  <section id="archive" class="archive">
-    
-      
-        <div class="archive-title category">
-          <h2 class="archive-name">问题&解决</h2>
-        </div>
-      
-    
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          svn使用问题&解决集锦
+        
+      </h1>
 
-    
-      
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            2019-06-01
-          
+      <div class="post-meta">
+        <span class="post-time">
+          2019-06-01
         </span>
-        <span class="archive-post-title">
-          <a href="/2019/06/01/svn报错及解决集锦/" class="archive-post-link">
-            svn使用问题&解决集锦
-          </a>
-        </span>
+        
+          <div class="post-category">
+            
+              <a href="/categories/问题-解决/">问题&解决</a>
+            
+          </div>
+        
+        
+        <div class="post-visits"
+             data-url="/2019/06/01/svn报错及解决集锦/"
+             data-title="svn使用问题&解决集锦">
+            阅读次数
+          </div>
+        
       </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#svn-co-命令报错"><span class="toc-text">svn co 命令报错</span></a></li></ol>
+    </div>
+  </div>
+
+
+    <div class="post-content">
+      
+        <h3 id="svn-co-命令报错"><a href="#svn-co-命令报错" class="headerlink" title="svn co 命令报错"></a>svn co 命令报错</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Error validating server certificate <span class="keyword">for</span> <span class="string">'https://example.com'</span>:</div><div class="line">The certificate is not issued by a trusted authority. Use the</div><div class="line">   fingerprint to validate the certificate manually!</div><div class="line">Certificate information:</div><div class="line">   Hostname: ...</div><div class="line"> - Valid: from Wed, 01 Sep 2010 08:25:36 GMT until Thu, 06 Oct 2011 08:25:36 GMT</div><div class="line"> - Issuer: ...</div><div class="line"> - Fingerprint: ...</div><div class="line">(R)eject, accept (t)emporarily or accept (p)ermanently? p</div></pre></td></tr></table></figure>
+<p>输入 p 后报错</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">svn: E170011: Repository moved temporarily to <span class="string">'你检出的svn地址'</span></div></pre></td></tr></table></figure>
+<p>google了一圈，没找到解决方法，然后看到一个讲到关于代理的 <a href="https://svn.haxx.se/users/archive-2010-05/0176.shtml，我突然想起我的科学上网的代理开着，把代理关了就好了" target="_blank" rel="external">https://svn.haxx.se/users/archive-2010-05/0176.shtml，我突然想起我的科学上网的代理开着，把代理关了就好了</a></p>
+
+      
+    </div>
+
     
       
-
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            2017-11-17
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2017/11/17/xxxViewController会与xxxView-xib冲突/" class="archive-post-link">
-            xxxViewController会与xxxView.xib冲突
-          </a>
-        </span>
-      </div>
-    
       
 
-      <div class="archive-post">
-        <span class="archive-post-time">
-          
-            2017-11-06
-          
-        </span>
-        <span class="archive-post-title">
-          <a href="/2017/11/06/composer删除Laravel组件失败/" class="archive-post-link">
-            Composer删除Laravel组件失败
-          </a>
-        </span>
-      </div>
-    
-  </section>
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://jacknehc.github.io">JackNehc</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://jacknehc.github.io/2019/06/01/svn报错及解决集锦/">https://jacknehc.github.io/2019/06/01/svn报错及解决集锦/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
 
-  
-  <nav class="pagination">
+
+
+      
+      
+  <div class="post-reward">
+    <input type="checkbox" name="reward" id="reward" hidden />
+    <label class="reward-button" for="reward">赞赏支持</label>
+    <div class="qr-code">
+      
+      
+        <label class="qr-code-image" for="reward">
+          <p>微信</p>
+          <img class="image" src="/image/reward/wechatPay.png" title="wechat">
+        </label>
+      
+      
+        <label class="qr-code-image" for="reward">
+          <p>支付宝</p>
+          <img class="image" src="/image/reward/alipay.png" title="alipay">
+        </label>
+      
+    </div>
+  </div>
+
     
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/svn/">svn</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2019/05/20/mac使用7z加密&解密文件/">
+        <span class="next-text nav-default">mac使用7z加密&解密文件命令</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
     
   </nav>
 
+      </footer>
+    
+
+  </article>
 
 
           </div>
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
       </main>
