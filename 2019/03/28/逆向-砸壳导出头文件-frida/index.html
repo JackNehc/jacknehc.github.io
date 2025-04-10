@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="x5-fullscreen" content="true">
+<meta name="full-screen" content="yes">
+<meta name="theme-color" content="#317EFB" />
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0" name="viewport">
+<meta name="description" content="前言上一篇介绍了用dumpdecrypted砸壳方法，觉得超级麻烦有没有？难道没有更方便的操作吗？嘻嘻，我们要感谢这位大佬，同时他也是MonkeyDev的作者，他弄了个工具，让我们可以一键砸壳，执行一个命令，便可以得到ipa包，进而用class-dump导出头文件，是不是很爽？废话不多说，直接进入主题，第三种方式-Frida。  Clutch dumpdecrypted frida">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逆向-砸壳导出头文件-(三)frida">
+<meta property="og:url" content="https://jacknehc.github.io/2019/03/28/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-frida/index.html">
+<meta property="og:site_name" content="This is JackNehc">
+<meta property="og:description" content="前言上一篇介绍了用dumpdecrypted砸壳方法，觉得超级麻烦有没有？难道没有更方便的操作吗？嘻嘻，我们要感谢这位大佬，同时他也是MonkeyDev的作者，他弄了个工具，让我们可以一键砸壳，执行一个命令，便可以得到ipa包，进而用class-dump导出头文件，是不是很爽？废话不多说，直接进入主题，第三种方式-Frida。  Clutch dumpdecrypted frida">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jacknehc.github.io/img/404.jpg">
+<meta property="article:published_time" content="2019-03-28T12:14:12.000Z">
+<meta property="article:modified_time" content="2025-04-10T05:41:57.582Z">
+<meta property="article:author" content="JackNehc">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="逆向">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jacknehc.github.io/img/404.jpg">
+
+
+<title >逆向-砸壳导出头文件-(三)frida</title>
+
+<!-- Favicon -->
+
+    <link href='/img/favicon.svg?v=2.2.5' rel='icon' type='image/png' sizes='16x16' ></link>
+
+
+    <link href='/img/favicon.svg?v=2.2.5' rel='icon' type='image/png' sizes='32x32' ></link>
+
+
+
+
+<!-- Plugin -->
+
+
+
+
+    
+<link rel="stylesheet" href="/css/plugins/bootstrap.row.css">
+
+    
+<link rel="stylesheet" href="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.css">
+
+    
+    
+
+
+
+
+<!-- Icon -->
+
+    
+<link rel="stylesheet" href="/css/plugins/font-awesome.min.css">
+
+
+
+
+<!-- Variable -->
+<script>window.ASYNC_CONFIG = {"hostname":"jacknehc.github.io","author":"JackNehc","root":"/","typed_text":null,"theme_version":"2.2.5","theme":{"switch":true,"default":"style-light"},"favicon":{"logo":"/img/favicon.svg","icon16":"/img/favicon.svg","icon32":"/img/favicon.svg","apple_touch_icon":null,"webmanifest":null,"visibilitychange":false,"hidden":"/failure.ico","show_text":"(/≧▽≦/)Hey! Good again!","hide_text":"(●—●)Oh, crash!"},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}.","hits":"${hits} results found","hits_time":"${hits} results found in ${time} ms","author":"Post author: ","copyright_link":"Post link: ","copyright_license_title":"Copyright Notice: ","copyright_license_content":"All articles in this blog are licensed under undefined unless otherwise stated.","copy_success":"Copied","copy_failure":"Copy failed","open_read_mode":"Enter reading mode","exit_read_mode":"Exit reading mode","notice_outdate_message":"It has been undefined days since the last update, the content of the article may be outdated.","sticky":"TOP","just":"Just","min":"minutes ago","hour":"hours ago","day":"days ago","month":"months ago"},"swup":false,"plugin":{"flickr_justified_gallery":"https://unpkg.com/flickr-justified-gallery@latest/dist/fjGallery.min.js"},"icons":{"sun":"far fa-sun","moon":"far fa-moon","play":"fas fa-play","email":"far fa-envelope","next":"fas fa-arrow-right","calendar":"far fa-calendar-alt","clock":"far fa-clock","user":"far fa-user","back_top":"fas fa-arrow-up","close":"fas fa-times","search":"fas fa-search","reward":"fas fa-hand-holding-usd","toc_tag":"fas fa-th-list","read":"fas fa-book-reader","arrows":"fas fa-arrows-alt-h","double_arrows":"fas fa-angle-double-down","copy":"fas fa-copy"},"icontype":"font","highlight":{"plugin":"highlighjs","theme":true,"copy":true,"lang":true,"title":"default","height_limit":false},"toc":{"post_title":false},"live_time":{"start_time":"01/01/2015 00:00:00","prefix":"The blog has been lovely to run undefined day"},"danmu":{"enable":false,"el":".trm-banner"},"creative_commons":{"license":"by-nc-sa","language":"deed.zh-hans"}};</script>
+<script id="async-page-config">window.PAGE_CONFIG = {"isPost":true,"isHome":false,"postUpdate":"2025-04-10 13:41:57"};</script>
+
+<!-- Theme mode css -->
+<link data-swup-theme rel="stylesheet" href="/css/index.css?v=2.2.5" id="trm-switch-style">
+<script>
+    let defaultMode = ASYNC_CONFIG.theme.default !=='auto' ?  ASYNC_CONFIG.theme.default : (window.matchMedia("(prefers-color-scheme: light)").matches ? 'style-light' : 'style-dark')
+    let catchMode = localStorage.getItem('theme-mode') || defaultMode;
+    let type = catchMode === 'style-dark' ? 'add' : 'remove';
+    document.documentElement.classList[type]('dark')
+</script>
+
+<!-- CDN -->
+
+
+    
+    
+
+
+
+<!-- Site Analytics -->
+
+ 
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+  <!-- app wrapper -->
+  <div class="trm-app-frame">
+
+    <!-- page preloader -->
+    <div class="trm-preloader">
+    <div class="trm-holder">
+        <div class="preloader">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>
+    <!-- page preloader end -->
+
+    <!-- change mode preloader -->
+    <div class="trm-mode-swich-animation-frame">
+    <div class="trm-mode-swich-animation">
+        <i class="i-sun"><i class="iconfont far fa-sun"></i></i>
+        <div class="trm-horizon"></div>
+        <i class="i-moon"><i class="iconfont far fa-moon"></i></i>
+    </div>
+</div>
+    <!-- change mode preloader end -->
+
+      <!-- scroll container -->
+      <div id="trm-dynamic-content" class="trm-swup-animation">
+        <div id="trm-scroll-container" class="trm-scroll-container" style="opacity: 0">
+            <!-- top bar -->
+            <header class="trm-top-bar">
+	<div class="container">
+		<div class="trm-left-side">
+			<!-- logo -->
+<a href="/" class="trm-logo-frame trm-anima-link">
+    
+        <img alt="logo" src="/img/favicon.svg">
+    
+    
+        <div class="trm-logo-text">
+            This is <span>JackNehc!</span>
+        </div>
+    
+</a>
+<!-- logo end -->
+		</div>
+		<div class="trm-right-side">
+			<!-- menu -->
+<div class="trm-menu">
+    <nav>
+        <ul>
+            
+            <li class="menu-item-has-children ">
+                <a  href="/" target="">
+                    home
+                </a>
+                
+                <ul>
+                    
+                    <li>
+                        <a  href="/archives2/" target="">
+                            archives2
+                        </a>
+                    </li>
+                    
+                </ul>
+                
+            </li>
+            
+            <li class="menu-item-has-children ">
+                <a data-no-swup href="/archives/" target="">
+                    archives
+                </a>
+                
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+<!-- menu end -->
+			
+    <!-- mode switcher place -->
+    <div class="trm-mode-switcher-place">
+        <div class="trm-mode-switcher">
+            <i class="iconfont far fa-sun"></i>
+            <input class="tgl tgl-light" id="trm-swich" type="checkbox">
+            <label class="trm-swich" for="trm-swich"></label>
+            <i class="iconfont far fa-moon"></i>
+        </div>
+    </div>
+    <!-- mode switcher place end -->
+
+			
+		</div>
+		<div class="trm-menu-btn">
+			<span></span>
+		</div>
+	</div>
+</header>
+            <!-- top bar end -->
+
+            <!-- body -->
+            
+<div class="trm-content-start">
+    <!-- banner -->
+    <div class="trm-banner">
+    
+    <!-- banner cover -->
+    <img style="object-position:top;object-fit:cover;" alt="banner" class="trm-banner-cover" src="/img/banner.png">
+    <!-- banner cover end -->
+    
+
+    <!-- banner content -->
+    <div class="trm-banner-content trm-overlay">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-lg-4"></div>
+                
+                <div class="col-lg-8">
+
+                    <!-- banner title -->
+                    <div class="trm-banner-text ">
+                        <div class="trm-label trm-mb-20">
+                            NEWS LETTER
+                        </div>
+                        <h1 class="trm-mb-30 trm-hsmb-font">
+                            逆向-砸壳导出头文件-(三)frida
+                        </h1>
+
+                        
+                            <ul class="trm-breadcrumbs trm-label">
+                                <li>
+                                    <a href="/" class="trm-anima-link">Home</a>
+                                </li>
+                                <li>
+                                    <span>
+                                        2019
+                                    </span>
+                                </li>
+                            </ul>
+                        
+                    </div>
+                    <!-- banner title end -->
+
+                    <!-- scroll hint -->
+                    <span id="scroll-triger" class="trm-scroll-hint-frame">
+                        <div class="trm-scroll-hint"></div>
+                        <span class="trm-label">Scroll down</span>
+                    </span>
+                    <!-- scroll hint end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- banner content end -->
+</div>
+    <!-- banner end -->
+    <div class="container">
+        <div class="row">
+            
+                <div class="trm-page-sidebar col-lg-4 hidden-sm">
+                    <!-- main card -->
+                    <div class="trm-main-card-frame trm-sidebar">
+    <div class="trm-main-card"> 
+        <!-- card header -->
+<div class="trm-mc-header">
+    <div class="trm-avatar-frame trm-mb-20">
+        <img alt="Avatar" class="trm-avatar" src="/images/avatar.png">
+    </div>
+    <h5 class="trm-name trm-mb-15">
+        JackNehc
+    </h5>
+    
+</div>
+<!-- card header end -->
+        <!-- sidebar social -->
+
+<!-- sidebar social end -->
+        <!-- info -->
+<div class="trm-divider trm-mb-40 trm-mt-40"></div>
+<ul class="trm-table trm-mb-20">
+    
+        <li>
+            <div class="trm-label">
+                Residence:
+            </div>
+            <div class="trm-label trm-label-light">
+                Mars
+            </div>
+        </li>
+    
+</ul>
+<!-- info end -->
+
+        
+    <div class="trm-divider trm-mb-40 trm-mt-40"></div>
+    <!-- action button -->
+    <div class="text-center">
+        <a href="mailto:jacknehc3@gmail.com" class="trm-btn">
+            Contact Me
+            <i class="iconfont far fa-envelope"></i>
+        </a>
+    </div>
+    <!-- action button end -->
+
+    </div>
+</div>
+                    <!-- main card end -->
+                </div>
+            
+            <div class="trm-page-content col-lg-8">
+                <div id="trm-content" class="trm-content">
+                    <div class="trm-post-info row hidden-sm">
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-calendar-alt trm-icon"></i><br>
+            03/28
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-clock trm-icon"></i><br>
+            20:14
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div id="post-author" class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-user trm-icon"></i><br>
+            JackNehc
+        </div>
+    </div>
+</div>
+<div class="trm-card ">
+    <article id="article-container" class="trm-publication">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="/2019/03/22/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-dumpdecrypted/">上一篇</a>介绍了用dumpdecrypted砸壳方法，觉得超级麻烦有没有？难道没有更方便的操作吗？嘻嘻，我们要感谢这位<a target="_blank" rel="noopener" href="http://www.alonemonkey.com/">大佬</a>，同时他也是MonkeyDev的作者，他弄了个工具，让我们可以一键砸壳，执行一个命令，便可以得到ipa包，进而用class-dump导出头文件，是不是很爽？废话不多说，直接进入主题，<strong>第三种方式-Frida</strong>。</p>
+<ul>
+<li><a href="/2019/03/17/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-Clutch/">Clutch</a></li>
+<li><a href="/2019/03/22/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-dumpdecrypted/">dumpdecrypted</a></li>
+<li><a href="/2019/03/28/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-frida/"><strong>frida</strong></a></li>
+</ul>
+<span id="more"></span>
+
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><ol>
+<li><p>越狱的iPhone</p>
+<ul>
+<li><p>安装frida</p>
+<p>  打开cydia添加源： <a target="_blank" rel="noopener" href="https://build.frida.re/">https://build.frida.re</a></p>
+<p>  打开这个源，安装frida</p>
+</li>
+</ul>
+</li>
+<li><p>电脑安装usbmuxd，class-dump，python，wget，pip</p>
+<ul>
+<li><p>usbmuxd可通过下面命令安装，前提是你Mac装了Homebrew</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew install usbmuxd</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果你安装了或者打算装 <a target="_blank" rel="noopener" href="https://monkeydev.org/">Monkey Dev</a> 的，就可以不用装 <strong>class-dump</strong>，因为它里面已经自带了。自己安装 <strong>class-dump</strong> 可以通过此<a target="_blank" rel="noopener" href="http://stevenygard.com/projects/class-dump/">地址</a>下载，下载后打开，把里面的 <strong>class-dump</strong> 复制到 <strong>&#x2F;usr&#x2F;local&#x2F;bin</strong> 路径下，打开终端，执行：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">class-dump</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>  成功安装好class-dump~</p>
+  <!-- ![](逆向-砸壳导出头文件-(二)dumpdecrypted/class-dump命令成功.png) -->
+  
+</li>
+<li><p>使用命令安装python</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew install python</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>  如果你之前装过python，要把python切换到2.7，因为frida是在2.7环境下运行的。</p>
+</li>
+<li><p>使用命令安装wget</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew install wget</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用命令安装pip</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先执行</span></span><br><span class="line">wget https://bootstrap.pypa.io/get-pip.py</span><br><span class="line"><span class="comment"># 然后再执行</span></span><br><span class="line"><span class="built_in">sudo</span> python get-pip.py</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><h3 id="安装Frida"><a href="#安装Frida" class="headerlink" title="安装Frida"></a>安装Frida</h3><ol>
+<li><p>安装 <strong>frida for mac</strong></p>
+<p> 终端执行：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> pip install frida</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p> 如果报了个错误含有six报错的，例如</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Uninstalling a distutils installed project (six) has been deprecated and will be removed <span class="keyword">in</span> a future version. This is due to the fact that uninstalling a distutils project will only partially uninstall the project.</span><br></pre></td></tr></table></figure>
+
+<p> 执行下面命令解决（网上好多都是一个 -，其实是两个 -）：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> pip install --upgrade frida --ignore-installed six</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置 <strong>frida-ios-dump</strong> 环境</p>
+<ul>
+<li><pre><code>执行下面命令下载安装：
+</code></pre>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建文件夹</span></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">mkdir</span> /opt/dump </span><br><span class="line"></span><br><span class="line"><span class="comment"># 到此目录下</span></span><br><span class="line"><span class="built_in">cd</span> /opt/dump</span><br><span class="line"></span><br><span class="line"><span class="comment"># git下载下来</span></span><br><span class="line"><span class="built_in">sudo</span> git <span class="built_in">clone</span> https://github.com/AloneMonkey/frida-ios-dump</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装</span></span><br><span class="line"><span class="built_in">sudo</span> pip install -r /opt/dump/frida-ios-dump/requirements.txt --upgrade</span><br></pre></td></tr></table></figure>
+</li>
+<li><pre><code>因为这是和iOS建立连接用的，所以修改 dump.py 的一些ssh参数
+</code></pre>
+<p>  到这个目录（&#x2F;opt&#x2F;dump&#x2F;frida-ios-dump&#x2F;）下打开dump.py这个文件，修改里面参数：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">User = <span class="string">&#x27;root&#x27;</span></span><br><span class="line">Password = <span class="string">&#x27;alpine&#x27;</span></span><br><span class="line">Host = <span class="string">&#x27;127.0.0.1&#x27;</span></span><br><span class="line">Port = 12345</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>为了方便输入命令，我们给dump设置别名</p>
+<p> 终端输入：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim ~/.bash_profile	</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按e选择编辑，然后再按i，你才能修改内容，在最后添加</span></span><br><span class="line"><span class="built_in">alias</span> dump.py=<span class="string">&quot;/opt/dump/frida-ios-dump/dump.py&quot;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p> 然后按esc键，输入保存命令：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:wq</span><br></pre></td></tr></table></figure>
+
+<p> 然后我们要使别名生效：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bash_profile</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="砸壳"><a href="#砸壳" class="headerlink" title="砸壳"></a>砸壳</h3><ol>
+<li><p>链接手机</p>
+<p> usb插上iPhone，终端输入：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iproxy 12345 22</span><br></pre></td></tr></table></figure>
+<p> 这里切记端口号要和你上面dump.py里面设置的端口号一致</p>
+</li>
+<li><p>保持你要砸壳的app在前台，终端执行：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dump.py -l</span><br></pre></td></tr></table></figure>
+<p> 找到你想要砸壳的app，执行：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dump.py WeChat</span><br></pre></td></tr></table></figure>
+<p> 你会看到屏幕会一直在跳动，直到出现</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0.00B [00:00, ?B/s]Generating <span class="string">&quot;微信.ipa&quot;</span></span><br></pre></td></tr></table></figure>
+<p> 砸壳后的ipa包就已经在你运行命令的目录下了，你可以执行ls查看，并且用mv命令移到你想放的地方：</p>
+ <!-- ![](/frida砸壳成功.png) -->
+ <img src="/2019/03/28/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-frida/frida%E7%A0%B8%E5%A3%B3%E6%88%90%E5%8A%9F.png" class=""  data-tag='post-image' onload='this.onload=null;this.style.opacity=1;' loading="lazy" onerror='this.onerror=null;this.src="/img/404.jpg"'></li>
+</ol>
+<h3 id="导出头文件"><a href="#导出头文件" class="headerlink" title="导出头文件"></a>导出头文件</h3><ol>
+<li><p>拿到可执行文件</p>
+<p> 从上面砸壳我们已经成功得到砸完壳的ipa包了，右键解压，然后你会发现一个Payload文件夹，右键显示包内容，在里面找到 <strong>WeChat</strong> 这个文件，把它复制出来放到你喜欢的路径下，这就是微信的可执行文件啦，我们要利用这个文件来导出头文件。</p>
+</li>
+<li><p>导出头文件</p>
+<p> 用class-dump导出头文件，到终端执行：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class-dump -H &lt;你放WeChat可执行文件的路径&gt; -o &lt;你打算放导出的头文件的文件夹路径&gt;</span><br></pre></td></tr></table></figure>
+<p> 是不是很舒服，用frida，论站在巨人的肩膀能省多少事。</p>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此，三种方法砸壳&amp;获取头文件演示完毕，个人非常推荐最后这一种方式砸壳，简单快捷，省下来的时间用来分写他们的代码好过。最后希望文章能帮到各位读者，有错欢迎指教，砸壳获取头文件这只是个开始，接下来的逆向之路还很长，笔者继续潜心修炼去了。</p>
+
+</article>
+    
+    
+
+</div>
+<div class="trm-post-next-prev row">
+    <div class="col-lg-12">
+        <!-- title -->
+        <h5 class="trm-title-with-divider">
+            Other Articles
+            <span data-number="02"></span>
+        </h5>
+    </div>
+    
+        <div class="col-lg-6">
+    <div class="trm-blog-card trm-scroll-animation">
+        <a href="/2019/05/20/mac%E4%BD%BF%E7%94%A87z%E5%8A%A0%E5%AF%86&%E8%A7%A3%E5%AF%86%E6%96%87%E4%BB%B6/" class="trm-cover-frame trm-anima-link">
+            
+            
+                <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+            
+        </a>
+        
+        <div class="trm-card-descr">
+            <div class="trm-label trm-category trm-mb-20">
+                <a href=" /categories/%E8%AE%B0%E5%BD%95/">
+                    记录
+                </a>
+            </div>
+            <h5>
+                <a href="/2019/05/20/mac%E4%BD%BF%E7%94%A87z%E5%8A%A0%E5%AF%86&%E8%A7%A3%E5%AF%86%E6%96%87%E4%BB%B6/" class="trm-anima-link">
+                    mac使用7z加密&amp;解密文件命令
+                </a>
+            </h5>
+            <div class="trm-divider trm-mb-20 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>19/05/20</li>
+                <li>14:36</li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="col-lg-6">
+    <div class="trm-blog-card trm-scroll-animation">
+        <a href="/2019/03/22/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-dumpdecrypted/" class="trm-cover-frame trm-anima-link">
+            
+            
+                <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+            
+        </a>
+        
+        <div class="trm-card-descr">
+            <div class="trm-label trm-category trm-mb-20">
+                <a href=" #.">
+                    Unclassified
+                </a>
+            </div>
+            <h5>
+                <a href="/2019/03/22/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-dumpdecrypted/" class="trm-anima-link">
+                    逆向-砸壳导出头文件-(二)dumpdecrypted
+                </a>
+            </h5>
+            <div class="trm-divider trm-mb-20 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>19/03/22</li>
+                <li>12:22</li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</div>
+    
+</div>
+
+    
+
+
+
+                    <div class="trm-divider footer-divider"></div>
+
+                    <!-- footer -->
+                    <footer class="trm-footer-card trm-scroll-animation">
+
+    
+
+    
+        <div class="trm-footer-item">
+            <span>© 2015 - 2025</span>
+            <span class="footer-separator"data-separator=" · "></span>
+            <span class="trm-accent-color">JackNehc</span>
+        </div>
+    
+
+    
+        <div class="trm-footer-item">
+            <span>
+                Powered by <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> v7.3.0
+            </span>
+            <span class="footer-separator" data-separator=" | "></span>
+            <span> 
+                Theme - 
+                <a rel="noopener" href='https://github.com/MaLuns/hexo-theme-async' target='_blank'>Async</a>
+                v2.2.5
+            </span>
+        </div>
+      
+
+    
+        <div class="trm-footer-item blog-run-long"></div>
+     
+
+     
+</footer>
+                    <!-- footer end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            <!-- body end -->
+
+            
+
+    <div id="post-toc" class="trm-post-toc">
+      <div class="trm-post-toc-header">
+        Article table of contents
+				<span id="post-toc-top">
+					TOP
+				</span>
+      </div>
+      <div class="trm-post-toc-content">
+        <ol class="trm-toc"><li class="trm-toc-item trm-toc-level-2" title="前言"><a rel="nofollow" class="trm-toc-link" href="#前言"><span class="trm-toc-number">1.</span> <span class="trm-toc-text">前言</span></a></li><li class="trm-toc-item trm-toc-level-2" title="准备"><a rel="nofollow" class="trm-toc-link" href="#准备"><span class="trm-toc-number">2.</span> <span class="trm-toc-text">准备</span></a></li><li class="trm-toc-item trm-toc-level-2" title="过程"><a rel="nofollow" class="trm-toc-link" href="#过程"><span class="trm-toc-number">3.</span> <span class="trm-toc-text">过程</span></a><ol class="trm-toc-child"><li class="trm-toc-item trm-toc-level-3" title="安装Frida"><a rel="nofollow" class="trm-toc-link" href="#安装Frida"><span class="trm-toc-number">3.1.</span> <span class="trm-toc-text">安装Frida</span></a></li><li class="trm-toc-item trm-toc-level-3" title="砸壳"><a rel="nofollow" class="trm-toc-link" href="#砸壳"><span class="trm-toc-number">3.2.</span> <span class="trm-toc-text">砸壳</span></a></li><li class="trm-toc-item trm-toc-level-3" title="导出头文件"><a rel="nofollow" class="trm-toc-link" href="#导出头文件"><span class="trm-toc-number">3.3.</span> <span class="trm-toc-text">导出头文件</span></a></li></ol></li><li class="trm-toc-item trm-toc-level-2" title="总结"><a rel="nofollow" class="trm-toc-link" href="#总结"><span class="trm-toc-number">4.</span> <span class="trm-toc-text">总结</span></a></li></ol>
+      </div>
+    </div>
+
+            
+<div class="trm-fixed-container">
+    
+        <div class="trm-fixed-btn post-toc-btn" data-title="Open toc">
+            <i class="iconfont fas fa-th-list"></i>
+        </div>
+    
+    
+        <div class="trm-fixed-btn" data-title="Read Mode" onclick="asyncFun.switchReadMode()">
+            <i class="iconfont fas fa-book-reader"></i>
+        </div>
+    
+    
+    <div id="trm-back-top" class="trm-fixed-btn" data-title="Back To Top">
+        <i class="iconfont fas fa-arrow-up"></i>
+    </div>
+</div>
+        </div>
+      </div>
+      <!-- scroll container end -->
+  </div>
+  <!-- app wrapper end -->
+
+  
+  <!-- Plugin -->
+
+
+
+
+    
+    
+<script src="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
+
+    
+
+    
+
+    
+
+    <!-- 数学公式 -->
+    
+
+    <!-- 评论插件 -->
+    
+        
+
+        
+    
+
+		
+
+
+
+
+    <!-- Service Worker -->
+    
+    <!-- baidu push -->
+    
+
+
+<script id="async-script" src="/js/main.js?v=2.2.5"></script>
+
+<!-- CDN -->
+
+
+    
+
+    
+
+    
+
+
+
+</body>
+
+</html>

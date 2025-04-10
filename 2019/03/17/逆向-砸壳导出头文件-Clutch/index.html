@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="x5-fullscreen" content="true">
+<meta name="full-screen" content="yes">
+<meta name="theme-color" content="#317EFB" />
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0" name="viewport">
+<meta name="description" content="前言最近想了解别人app的一个功能实现，入了逆向的坑，也当做一次更深了解oc底层的机会。前前后后看了几篇相关文章，就拿个App练了练手，在此记录下学习过程，方便以后回忆。首先，上传到AppStore的App都是经过苹果签名加密的（具体加密过程可以看我写的这篇文章），所以我们要拿到App代码的头文件，必须解密，俗称砸壳，接下来，我会用以下三种工具来实现砸壳并且导出头文件。此篇介绍的是Clutch。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逆向-砸壳导出头文件-(一)Clutch">
+<meta property="og:url" content="https://jacknehc.github.io/2019/03/17/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-Clutch/index.html">
+<meta property="og:site_name" content="This is JackNehc">
+<meta property="og:description" content="前言最近想了解别人app的一个功能实现，入了逆向的坑，也当做一次更深了解oc底层的机会。前前后后看了几篇相关文章，就拿个App练了练手，在此记录下学习过程，方便以后回忆。首先，上传到AppStore的App都是经过苹果签名加密的（具体加密过程可以看我写的这篇文章），所以我们要拿到App代码的头文件，必须解密，俗称砸壳，接下来，我会用以下三种工具来实现砸壳并且导出头文件。此篇介绍的是Clutch。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://jacknehc.github.io/img/404.jpg">
+<meta property="og:image" content="https://jacknehc.github.io/img/404.jpg">
+<meta property="og:image" content="https://jacknehc.github.io/img/404.jpg">
+<meta property="og:image" content="https://jacknehc.github.io/img/404.jpg">
+<meta property="article:published_time" content="2019-03-17T14:42:57.000Z">
+<meta property="article:modified_time" content="2025-04-10T05:41:24.207Z">
+<meta property="article:author" content="JackNehc">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="逆向">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jacknehc.github.io/img/404.jpg">
+
+
+<title >逆向-砸壳导出头文件-(一)Clutch</title>
+
+<!-- Favicon -->
+
+    <link href='/img/favicon.svg?v=2.2.5' rel='icon' type='image/png' sizes='16x16' ></link>
+
+
+    <link href='/img/favicon.svg?v=2.2.5' rel='icon' type='image/png' sizes='32x32' ></link>
+
+
+
+
+<!-- Plugin -->
+
+
+
+
+    
+<link rel="stylesheet" href="/css/plugins/bootstrap.row.css">
+
+    
+<link rel="stylesheet" href="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.css">
+
+    
+    
+
+
+
+
+<!-- Icon -->
+
+    
+<link rel="stylesheet" href="/css/plugins/font-awesome.min.css">
+
+
+
+
+<!-- Variable -->
+<script>window.ASYNC_CONFIG = {"hostname":"jacknehc.github.io","author":"JackNehc","root":"/","typed_text":null,"theme_version":"2.2.5","theme":{"switch":true,"default":"style-light"},"favicon":{"logo":"/img/favicon.svg","icon16":"/img/favicon.svg","icon32":"/img/favicon.svg","apple_touch_icon":null,"webmanifest":null,"visibilitychange":false,"hidden":"/failure.ico","show_text":"(/≧▽≦/)Hey! Good again!","hide_text":"(●—●)Oh, crash!"},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}.","hits":"${hits} results found","hits_time":"${hits} results found in ${time} ms","author":"Post author: ","copyright_link":"Post link: ","copyright_license_title":"Copyright Notice: ","copyright_license_content":"All articles in this blog are licensed under undefined unless otherwise stated.","copy_success":"Copied","copy_failure":"Copy failed","open_read_mode":"Enter reading mode","exit_read_mode":"Exit reading mode","notice_outdate_message":"It has been undefined days since the last update, the content of the article may be outdated.","sticky":"TOP","just":"Just","min":"minutes ago","hour":"hours ago","day":"days ago","month":"months ago"},"swup":false,"plugin":{"flickr_justified_gallery":"https://unpkg.com/flickr-justified-gallery@latest/dist/fjGallery.min.js"},"icons":{"sun":"far fa-sun","moon":"far fa-moon","play":"fas fa-play","email":"far fa-envelope","next":"fas fa-arrow-right","calendar":"far fa-calendar-alt","clock":"far fa-clock","user":"far fa-user","back_top":"fas fa-arrow-up","close":"fas fa-times","search":"fas fa-search","reward":"fas fa-hand-holding-usd","toc_tag":"fas fa-th-list","read":"fas fa-book-reader","arrows":"fas fa-arrows-alt-h","double_arrows":"fas fa-angle-double-down","copy":"fas fa-copy"},"icontype":"font","highlight":{"plugin":"highlighjs","theme":true,"copy":true,"lang":true,"title":"default","height_limit":false},"toc":{"post_title":false},"live_time":{"start_time":"01/01/2015 00:00:00","prefix":"The blog has been lovely to run undefined day"},"danmu":{"enable":false,"el":".trm-banner"},"creative_commons":{"license":"by-nc-sa","language":"deed.zh-hans"}};</script>
+<script id="async-page-config">window.PAGE_CONFIG = {"isPost":true,"isHome":false,"postUpdate":"2025-04-10 13:41:24"};</script>
+
+<!-- Theme mode css -->
+<link data-swup-theme rel="stylesheet" href="/css/index.css?v=2.2.5" id="trm-switch-style">
+<script>
+    let defaultMode = ASYNC_CONFIG.theme.default !=='auto' ?  ASYNC_CONFIG.theme.default : (window.matchMedia("(prefers-color-scheme: light)").matches ? 'style-light' : 'style-dark')
+    let catchMode = localStorage.getItem('theme-mode') || defaultMode;
+    let type = catchMode === 'style-dark' ? 'add' : 'remove';
+    document.documentElement.classList[type]('dark')
+</script>
+
+<!-- CDN -->
+
+
+    
+    
+
+
+
+<!-- Site Analytics -->
+
+ 
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+  <!-- app wrapper -->
+  <div class="trm-app-frame">
+
+    <!-- page preloader -->
+    <div class="trm-preloader">
+    <div class="trm-holder">
+        <div class="preloader">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>
+    <!-- page preloader end -->
+
+    <!-- change mode preloader -->
+    <div class="trm-mode-swich-animation-frame">
+    <div class="trm-mode-swich-animation">
+        <i class="i-sun"><i class="iconfont far fa-sun"></i></i>
+        <div class="trm-horizon"></div>
+        <i class="i-moon"><i class="iconfont far fa-moon"></i></i>
+    </div>
+</div>
+    <!-- change mode preloader end -->
+
+      <!-- scroll container -->
+      <div id="trm-dynamic-content" class="trm-swup-animation">
+        <div id="trm-scroll-container" class="trm-scroll-container" style="opacity: 0">
+            <!-- top bar -->
+            <header class="trm-top-bar">
+	<div class="container">
+		<div class="trm-left-side">
+			<!-- logo -->
+<a href="/" class="trm-logo-frame trm-anima-link">
+    
+        <img alt="logo" src="/img/favicon.svg">
+    
+    
+        <div class="trm-logo-text">
+            This is <span>JackNehc!</span>
+        </div>
+    
+</a>
+<!-- logo end -->
+		</div>
+		<div class="trm-right-side">
+			<!-- menu -->
+<div class="trm-menu">
+    <nav>
+        <ul>
+            
+            <li class="menu-item-has-children ">
+                <a  href="/" target="">
+                    home
+                </a>
+                
+                <ul>
+                    
+                    <li>
+                        <a  href="/archives2/" target="">
+                            archives2
+                        </a>
+                    </li>
+                    
+                </ul>
+                
+            </li>
+            
+            <li class="menu-item-has-children ">
+                <a data-no-swup href="/archives/" target="">
+                    archives
+                </a>
+                
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+<!-- menu end -->
+			
+    <!-- mode switcher place -->
+    <div class="trm-mode-switcher-place">
+        <div class="trm-mode-switcher">
+            <i class="iconfont far fa-sun"></i>
+            <input class="tgl tgl-light" id="trm-swich" type="checkbox">
+            <label class="trm-swich" for="trm-swich"></label>
+            <i class="iconfont far fa-moon"></i>
+        </div>
+    </div>
+    <!-- mode switcher place end -->
+
+			
+		</div>
+		<div class="trm-menu-btn">
+			<span></span>
+		</div>
+	</div>
+</header>
+            <!-- top bar end -->
+
+            <!-- body -->
+            
+<div class="trm-content-start">
+    <!-- banner -->
+    <div class="trm-banner">
+    
+    <!-- banner cover -->
+    <img style="object-position:top;object-fit:cover;" alt="banner" class="trm-banner-cover" src="/img/banner.png">
+    <!-- banner cover end -->
+    
+
+    <!-- banner content -->
+    <div class="trm-banner-content trm-overlay">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-lg-4"></div>
+                
+                <div class="col-lg-8">
+
+                    <!-- banner title -->
+                    <div class="trm-banner-text ">
+                        <div class="trm-label trm-mb-20">
+                            NEWS LETTER
+                        </div>
+                        <h1 class="trm-mb-30 trm-hsmb-font">
+                            逆向-砸壳导出头文件-(一)Clutch
+                        </h1>
+
+                        
+                            <ul class="trm-breadcrumbs trm-label">
+                                <li>
+                                    <a href="/" class="trm-anima-link">Home</a>
+                                </li>
+                                <li>
+                                    <span>
+                                        2019
+                                    </span>
+                                </li>
+                            </ul>
+                        
+                    </div>
+                    <!-- banner title end -->
+
+                    <!-- scroll hint -->
+                    <span id="scroll-triger" class="trm-scroll-hint-frame">
+                        <div class="trm-scroll-hint"></div>
+                        <span class="trm-label">Scroll down</span>
+                    </span>
+                    <!-- scroll hint end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- banner content end -->
+</div>
+    <!-- banner end -->
+    <div class="container">
+        <div class="row">
+            
+                <div class="trm-page-sidebar col-lg-4 hidden-sm">
+                    <!-- main card -->
+                    <div class="trm-main-card-frame trm-sidebar">
+    <div class="trm-main-card"> 
+        <!-- card header -->
+<div class="trm-mc-header">
+    <div class="trm-avatar-frame trm-mb-20">
+        <img alt="Avatar" class="trm-avatar" src="/images/avatar.png">
+    </div>
+    <h5 class="trm-name trm-mb-15">
+        JackNehc
+    </h5>
+    
+</div>
+<!-- card header end -->
+        <!-- sidebar social -->
+
+<!-- sidebar social end -->
+        <!-- info -->
+<div class="trm-divider trm-mb-40 trm-mt-40"></div>
+<ul class="trm-table trm-mb-20">
+    
+        <li>
+            <div class="trm-label">
+                Residence:
+            </div>
+            <div class="trm-label trm-label-light">
+                Mars
+            </div>
+        </li>
+    
+</ul>
+<!-- info end -->
+
+        
+    <div class="trm-divider trm-mb-40 trm-mt-40"></div>
+    <!-- action button -->
+    <div class="text-center">
+        <a href="mailto:jacknehc3@gmail.com" class="trm-btn">
+            Contact Me
+            <i class="iconfont far fa-envelope"></i>
+        </a>
+    </div>
+    <!-- action button end -->
+
+    </div>
+</div>
+                    <!-- main card end -->
+                </div>
+            
+            <div class="trm-page-content col-lg-8">
+                <div id="trm-content" class="trm-content">
+                    <div class="trm-post-info row hidden-sm">
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-calendar-alt trm-icon"></i><br>
+            03/17
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-clock trm-icon"></i><br>
+            22:42
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div id="post-author" class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-user trm-icon"></i><br>
+            JackNehc
+        </div>
+    </div>
+</div>
+<div class="trm-card ">
+    <article id="article-container" class="trm-publication">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近想了解别人app的一个功能实现，入了逆向的坑，也当做一次更深了解oc底层的机会。前前后后看了几篇相关文章，就拿个App练了练手，在此记录下学习过程，方便以后回忆。首先，上传到AppStore的App都是经过苹果签名加密的（具体加密过程可以看我写的这篇<a href="/2018/06/22/%E8%8B%B9%E6%9E%9C%E7%9C%9F%E6%9C%BA%E6%B5%8B%E8%AF%95%E5%8E%9F%E7%90%86/">文章</a>），所以我们要拿到App代码的头文件，必须解密，俗称砸壳，接下来，我会用以下三种工具来实现砸壳并且导出头文件。<strong>此篇介绍的是Clutch</strong>。</p>
+<ul>
+<li><a href="/2019/03/17/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-Clutch/"><strong>Clutch</strong></a></li>
+<li><a href="/2019/03/22/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-dumpdecrypted/">dumpdecrypted</a></li>
+<li><a href="/2019/03/28/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-frida/">frida</a></li>
+</ul>
+<span id="more"></span>
+
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><ol>
+<li><p>越狱的iPhone</p>
+<ul>
+<li><p>Cydia安装OpenSSH（Mac 上远程输入命令操作 iOS 设备）</p>
+</li>
+<li><p>Cydia安装Apple File Conduit “2”（方便ifunbox等工具访问iOS系统目录）</p>
+<p>  安装 afc2add 也是一样，不过我在安装 <strong>afc2add</strong> 后无法访问系统目录，才用 <strong>Apple File Conduit “2”</strong> 这个插件的，这个插件要通过添加 <strong>apt.25pp.com</strong> 这个源来装，你用Cydia的源访问不了，应该是要翻墙。<br>  <strong>(这里小记录下，每次重新越狱， Apple File Conduit “2” 这个插件都要重新安装一遍，不然会失效)</strong></p>
+</li>
+</ul>
+</li>
+<li><p>电脑安装ifunbox，usbmuxd，class-dump</p>
+<ul>
+<li><p>iFunBox自己找，主要用来iPhone和Mac传输文件，实在不用也行，可用scp命令代替</p>
+<p>  usb连接手机情况下：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp -P 12345 root@localhost:&lt;手机上文件的路径&gt; &lt;复制的文件存放到电脑的路径&gt;</span><br><span class="line">scp -P 12345 &lt;电脑上文件的路径&gt; root@localhost:&lt;复制的文件存放到手机的路径&gt;</span><br></pre></td></tr></table></figure>
+
+<p>  wifi连接手机情况下：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp &lt;电脑上文件的路径&gt; root@越狱机ip地址:&lt;复制的文件存放到手机的路径&gt;</span><br><span class="line">scp root@越狱机ip地址:&lt;手机上文件的路径&gt; &lt;复制的文件存放到电脑的路径&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>usbmuxd可通过下面命令安装，前提是你Mac装了Homebrew</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew install usbmuxd</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>如果你安装了或者打算装 <a target="_blank" rel="noopener" href="https://monkeydev.org/">Monkey Dev</a> 的，就可以不用装 <strong>class-dump</strong>，因为它里面已经自带了。自己安装 <strong>class-dump</strong> 可以通过此<a target="_blank" rel="noopener" href="http://stevenygard.com/projects/class-dump/">地址</a>下载，下载后打开，把里面的 <strong>class-dump</strong> 复制到 <strong>&#x2F;usr&#x2F;local&#x2F;bin</strong> 路径下，打开终端，执行：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class-dump</span><br></pre></td></tr></table></figure>
+<p>  成功安装好class-dump~</p>
+  <!-- ![](class-dump命令成功.png) -->
+  <img src="/2019/03/17/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-Clutch/class-dump%E5%91%BD%E4%BB%A4%E6%88%90%E5%8A%9F.png" class=""  data-tag='post-image' onload='this.onload=null;this.style.opacity=1;' loading="lazy" onerror='this.onerror=null;this.src="/img/404.jpg"'></li>
+</ul>
+</li>
+</ol>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><h3 id="安装Clutch"><a href="#安装Clutch" class="headerlink" title="安装Clutch"></a>安装Clutch</h3><ol>
+<li><p>先从GitHub下载最新Clutch</p>
+<p> 下载地址：<a target="_blank" rel="noopener" href="https://github.com/KJCracks/Clutch/releases">https://github.com/KJCracks/Clutch/releases</a></p>
+</li>
+<li><p>ssh连接iPhone</p>
+<ul>
+<li><p>由于Mac上只支持4位的端口号，所以需要把iPhone的默认端口22映射到Mac上，相当于建立一个Mac和iPhone之间的通道。打开终端，执行：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iproxy 12345 22</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>这时终端会显示 <strong>waiting for connection</strong> 这表示我们已经搭建好Mac和iPhone的通道，现在我们直接和本地的12345端口通信就能和iPhone通信了。保持上一个命令显示的状态，新建个终端执行：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 12345 root@127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<p>  如果要你输入密码则输入：<strong>alpine</strong>，显示 <strong>iPhone:~ root#</strong> 代表成功，你可以在后面输入命令操作设备啦。</p>
+</li>
+</ul>
+</li>
+<li><p>移到iPhone的Device-&gt;usr-&gt;bin目录下</p>
+<p> 直接拖动下载 <strong>Clutch-2.0.4文件</strong> 到iFunBox的 <strong>Device&#x2F;usr&#x2F;bin</strong> 目录下就算安装成了。</p>
+</li>
+</ol>
+<h3 id="砸壳"><a href="#砸壳" class="headerlink" title="砸壳"></a>砸壳</h3><ol>
+<li><p>给 clutch 加权限</p>
+<p> cd到 clutch 所在位置：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iPhone:~ root# <span class="built_in">cd</span> /usr/bin</span><br><span class="line">iPhone:/usr/bin root#</span><br></pre></td></tr></table></figure>
+<p> 直接执行：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">	iPhone:/usr/bin root# Clutch-2.0.4</span><br><span class="line">-sh: /usr/bin/Clutch-2.0.4: Permission denied</span><br></pre></td></tr></table></figure>
+<p> 这是因为没有权限，给他加一下就好了</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">iPhone:/usr/bin root# <span class="built_in">chmod</span> +x Clutch-2.0.4</span><br><span class="line">iPhone:/usr/bin root# Clutch-2.0.4</span><br><span class="line">Usage: Clutch-2.0.4 [OPTIONS]</span><br><span class="line">-b --binary-dump &lt;value&gt; Only dump binary files from specified bundleID</span><br><span class="line">-d --dump &lt;value&gt;        Dump specified bundleID into .ipa file</span><br><span class="line">-i --print-installed     Print installed applications</span><br><span class="line">   --clean               Clean /var/tmp/clutch directory</span><br><span class="line">   --version             Display version and <span class="built_in">exit</span></span><br><span class="line">-? --<span class="built_in">help</span>                Display this <span class="built_in">help</span> and <span class="built_in">exit</span></span><br><span class="line">-n --no-color            Print with colors disabled</span><br></pre></td></tr></table></figure>
+
+<p> 这里很明显成功了，可以砸壳了。</p>
+</li>
+<li><p>找出要砸壳app的包名，砸壳</p>
+<p> 我们执行这句查看手机安装的App：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">iPhone:/usr/bin root# Clutch-2.0.4 -i</span><br><span class="line">Installed apps:</span><br><span class="line">1:   微信 &lt;com.tencent.xin&gt;</span><br><span class="line">2:   大众点评-分享你的潮生活 &lt;com.dianping.dpscope&gt;</span><br><span class="line">3:   Keep - 自由运动场 &lt;com.gotokeep.keep&gt;</span><br></pre></td></tr></table></figure>
+
+<p> 找到你想砸壳的App，复制他的包名，执行：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">iPhone:/usr/bin root# Clutch-2.0.4 -d com.tencent.xin</span><br><span class="line">Zipping MacauLife.app</span><br><span class="line">ASLR slide: 0x10009c000</span><br><span class="line">Dumping &lt;MacauLife&gt; (arm64)</span><br><span class="line">...</span><br><span class="line">DONE: /private/var/mobile/Documents/Dumped/com.tencent.xin-iOS9.0-(Clutch-2.0.4).ipa</span><br><span class="line">Finished dumping com.tencent.xin <span class="keyword">in</span> 17.6 seconds</span><br></pre></td></tr></table></figure>
+<p> 砸壳成功~</p>
+</li>
+</ol>
+<h3 id="导出头文件"><a href="#导出头文件" class="headerlink" title="导出头文件"></a>导出头文件</h3><ol>
+<li><p>拿到可执行文件</p>
+<p> 从上面砸壳我们已经成功得到砸完壳的ipa包了，接着只要根据返回的路径，从iFunBox找到ipa包，拖到你的Mac电脑上，右键解压，然后你会发现一个Payload文件夹，右键显示包内容，在里面找到 <strong>WeChat</strong> 这个文件，把它复制出来放到你喜欢的路径下，这就是微信的可执行文件啦，我们要利用这个文件来导出头文件。</p>
+ <!-- ![](显示微信包内容.png) -->
+ <img src="/2019/03/17/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-Clutch/%E6%98%BE%E7%A4%BA%E5%BE%AE%E4%BF%A1%E5%8C%85%E5%86%85%E5%AE%B9.png" class=""  data-tag='post-image' onload='this.onload=null;this.style.opacity=1;' loading="lazy" onerror='this.onerror=null;this.src="/img/404.jpg"'>
+ <!-- ![](WeChat可执行文件.png) -->
+ <img src="/2019/03/17/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-Clutch/WeChat%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6.png" class=""  data-tag='post-image' onload='this.onload=null;this.style.opacity=1;' loading="lazy" onerror='this.onerror=null;this.src="/img/404.jpg"'>
+<p> 如果没有iFunBox可以用命令代替这个操作：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp -P 12345 root@localhost:/private/var/mobile/Documents/Dumped/com.tencent.xin-iOS9.0-\\\(Clutch-2.0.4\\\).ipa ~/</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+ <!-- ![](usb连接手机scp命令从手机复制文件到电脑.png) -->
+ <img src="/2019/03/17/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-Clutch/usb%E8%BF%9E%E6%8E%A5%E6%89%8B%E6%9C%BAscp%E5%91%BD%E4%BB%A4%E4%BB%8E%E6%89%8B%E6%9C%BA%E5%A4%8D%E5%88%B6%E6%96%87%E4%BB%B6%E5%88%B0%E7%94%B5%E8%84%91.png" class=""  data-tag='post-image' onload='this.onload=null;this.style.opacity=1;' loading="lazy" onerror='this.onerror=null;this.src="/img/404.jpg"'>
+<p> 注意：</p>
+<ul>
+<li>此命令是在电脑终端执行，而不是在手机端终端下。</li>
+<li>-P 的 P 必须是大写，指定端口的意思。</li>
+<li>Clutch砸壳后生成的ipa包命名有’(‘，’)’这两个符号，要加反斜杠，不然会报找不到文件问题。或者你直接用mv命令重新命名这个ipa包名，去掉括号在进行scp复制到电脑也行。</li>
+</ul>
+</li>
+<li><p>导出头文件</p>
+<p> 用class-dump导出头文件，到终端执行（包括两个符号’&lt;’，’&gt;’整个替换路径）：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class-dump -H &lt;你放WeChat可执行文件的路径&gt; -o &lt;你打算放导出的头文件的文件夹路径&gt;</span><br></pre></td></tr></table></figure>
+
+<p> 喝杯咖啡，emmmm，头文件就出来啦。</p>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此，clutch砸壳&amp;获取头文件完毕，你可以用ida来打开上面得到可执行文件，它可以生成伪代码，免去看汇编的痛苦，配合sublime来看头文件，进而分析，学习别人App某些功能的实现，<a href="/2019/03/22/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-dumpdecrypted/">下一篇</a>将讲用 <strong>dumpdecrypted</strong> 砸壳。</p>
+
+</article>
+    
+    
+
+</div>
+<div class="trm-post-next-prev row">
+    <div class="col-lg-12">
+        <!-- title -->
+        <h5 class="trm-title-with-divider">
+            Other Articles
+            <span data-number="02"></span>
+        </h5>
+    </div>
+    
+        <div class="col-lg-6">
+    <div class="trm-blog-card trm-scroll-animation">
+        <a href="/2019/03/22/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-dumpdecrypted/" class="trm-cover-frame trm-anima-link">
+            
+            
+                <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+            
+        </a>
+        
+        <div class="trm-card-descr">
+            <div class="trm-label trm-category trm-mb-20">
+                <a href=" #.">
+                    Unclassified
+                </a>
+            </div>
+            <h5>
+                <a href="/2019/03/22/%E9%80%86%E5%90%91-%E7%A0%B8%E5%A3%B3%E5%AF%BC%E5%87%BA%E5%A4%B4%E6%96%87%E4%BB%B6-dumpdecrypted/" class="trm-anima-link">
+                    逆向-砸壳导出头文件-(二)dumpdecrypted
+                </a>
+            </h5>
+            <div class="trm-divider trm-mb-20 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>19/03/22</li>
+                <li>12:22</li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="col-lg-6">
+    <div class="trm-blog-card trm-scroll-animation">
+        <a href="/2018/09/12/%E6%9B%B4%E6%96%B0CocoaPods%E7%A7%81%E4%BA%BA%E5%BA%93/" class="trm-cover-frame trm-anima-link">
+            
+            
+                <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+            
+        </a>
+        
+        <div class="trm-card-descr">
+            <div class="trm-label trm-category trm-mb-20">
+                <a href=" /categories/%E8%AE%B0%E5%BD%95/">
+                    记录
+                </a>
+            </div>
+            <h5>
+                <a href="/2018/09/12/%E6%9B%B4%E6%96%B0CocoaPods%E7%A7%81%E4%BA%BA%E5%BA%93/" class="trm-anima-link">
+                    更新CocoaPods私人库
+                </a>
+            </h5>
+            <div class="trm-divider trm-mb-20 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>18/09/12</li>
+                <li>22:01</li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</div>
+    
+</div>
+
+    
+
+
+
+                    <div class="trm-divider footer-divider"></div>
+
+                    <!-- footer -->
+                    <footer class="trm-footer-card trm-scroll-animation">
+
+    
+
+    
+        <div class="trm-footer-item">
+            <span>© 2015 - 2025</span>
+            <span class="footer-separator"data-separator=" · "></span>
+            <span class="trm-accent-color">JackNehc</span>
+        </div>
+    
+
+    
+        <div class="trm-footer-item">
+            <span>
+                Powered by <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> v7.3.0
+            </span>
+            <span class="footer-separator" data-separator=" | "></span>
+            <span> 
+                Theme - 
+                <a rel="noopener" href='https://github.com/MaLuns/hexo-theme-async' target='_blank'>Async</a>
+                v2.2.5
+            </span>
+        </div>
+      
+
+    
+        <div class="trm-footer-item blog-run-long"></div>
+     
+
+     
+</footer>
+                    <!-- footer end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            <!-- body end -->
+
+            
+
+    <div id="post-toc" class="trm-post-toc">
+      <div class="trm-post-toc-header">
+        Article table of contents
+				<span id="post-toc-top">
+					TOP
+				</span>
+      </div>
+      <div class="trm-post-toc-content">
+        <ol class="trm-toc"><li class="trm-toc-item trm-toc-level-2" title="前言"><a rel="nofollow" class="trm-toc-link" href="#前言"><span class="trm-toc-number">1.</span> <span class="trm-toc-text">前言</span></a></li><li class="trm-toc-item trm-toc-level-2" title="准备"><a rel="nofollow" class="trm-toc-link" href="#准备"><span class="trm-toc-number">2.</span> <span class="trm-toc-text">准备</span></a></li><li class="trm-toc-item trm-toc-level-2" title="过程"><a rel="nofollow" class="trm-toc-link" href="#过程"><span class="trm-toc-number">3.</span> <span class="trm-toc-text">过程</span></a><ol class="trm-toc-child"><li class="trm-toc-item trm-toc-level-3" title="安装Clutch"><a rel="nofollow" class="trm-toc-link" href="#安装Clutch"><span class="trm-toc-number">3.1.</span> <span class="trm-toc-text">安装Clutch</span></a></li><li class="trm-toc-item trm-toc-level-3" title="砸壳"><a rel="nofollow" class="trm-toc-link" href="#砸壳"><span class="trm-toc-number">3.2.</span> <span class="trm-toc-text">砸壳</span></a></li><li class="trm-toc-item trm-toc-level-3" title="导出头文件"><a rel="nofollow" class="trm-toc-link" href="#导出头文件"><span class="trm-toc-number">3.3.</span> <span class="trm-toc-text">导出头文件</span></a></li></ol></li><li class="trm-toc-item trm-toc-level-2" title="总结"><a rel="nofollow" class="trm-toc-link" href="#总结"><span class="trm-toc-number">4.</span> <span class="trm-toc-text">总结</span></a></li></ol>
+      </div>
+    </div>
+
+            
+<div class="trm-fixed-container">
+    
+        <div class="trm-fixed-btn post-toc-btn" data-title="Open toc">
+            <i class="iconfont fas fa-th-list"></i>
+        </div>
+    
+    
+        <div class="trm-fixed-btn" data-title="Read Mode" onclick="asyncFun.switchReadMode()">
+            <i class="iconfont fas fa-book-reader"></i>
+        </div>
+    
+    
+    <div id="trm-back-top" class="trm-fixed-btn" data-title="Back To Top">
+        <i class="iconfont fas fa-arrow-up"></i>
+    </div>
+</div>
+        </div>
+      </div>
+      <!-- scroll container end -->
+  </div>
+  <!-- app wrapper end -->
+
+  
+  <!-- Plugin -->
+
+
+
+
+    
+    
+<script src="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
+
+    
+
+    
+
+    
+
+    <!-- 数学公式 -->
+    
+
+    <!-- 评论插件 -->
+    
+        
+
+        
+    
+
+		
+
+
+
+
+    <!-- Service Worker -->
+    
+    <!-- baidu push -->
+    
+
+
+<script id="async-script" src="/js/main.js?v=2.2.5"></script>
+
+<!-- CDN -->
+
+
+    
+
+    
+
+    
+
+
+
+</body>
+
+</html>
