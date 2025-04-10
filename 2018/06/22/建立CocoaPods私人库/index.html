@@ -375,7 +375,7 @@
 <li><p>提交代码到代码仓库</p>
 <p> 可能git使用的不熟，遇到点小问题，首先cd到Pod项目文件工程目录下，执行以下提交代码：</p>
  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ git add .</span><br><span class="line">$ git commit -s -m <span class="string">&quot;Initial Commit of Library&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加远端仓库</span></span><br><span class="line">$ git remote add origin git@gitee.com:jacknehc/JNUIKitComponent.git           </span><br></pre></td></tr></table></figure>
-<p> <a href="mailto:&#x67;&#x69;&#116;&#x40;&#x67;&#x69;&#x74;&#101;&#x65;&#46;&#x63;&#111;&#x6d;">git@gitee.com</a>:jacknehc&#x2F;JNUIKitComponent.git是你存放的代码寄放平台获取的ssh地址，通过ssh协议来拉取代码，所以你需要在本地生成公钥私钥：</p>
+<p> <a href="mailto:&#103;&#105;&#116;&#x40;&#103;&#105;&#x74;&#x65;&#x65;&#46;&#x63;&#x6f;&#x6d;">git@gitee.com</a>:jacknehc&#x2F;JNUIKitComponent.git是你存放的代码寄放平台获取的ssh地址，通过ssh协议来拉取代码，所以你需要在本地生成公钥私钥：</p>
  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -C后面填写你的邮箱</span></span><br><span class="line">ssh-keygen -t rsa -C <span class="string">&#x27;xxx@xxx.com&#x27;</span></span><br></pre></td></tr></table></figure>
 
 <p> 然后到~&#x2F;.ssh&#x2F;查看id_rsa.pub，复制里面的内容到代码寄放平台的公钥里就可以了，然后接下来提交代码：</p>
